@@ -27,14 +27,14 @@
     align-items: center;
   }
 
-  /* ── SCREENS ── */
   .screen { display:none; width:100%; height:100dvh; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
   .screen.active { display:flex; }
 
   /* LOBBY */
   #screen-lobby {
     background: radial-gradient(ellipse at 50% 30%, #001a2e 0%, #000008 70%);
-    gap: 24px;
+    gap: 18px;
+    overflow-y: auto;
   }
   .logo {
     font-size: clamp(2rem, 10vw, 3.5rem);
@@ -56,9 +56,9 @@
     text-transform: uppercase;
   }
 
-  .input-group { display:flex; flex-direction:column; gap:8px; width:100%; max-width:320px; }
+  .input-group { display:flex; flex-direction:column; gap:6px; width:100%; max-width:320px; }
   .input-group label { font-size:0.7rem; letter-spacing:0.2em; color:var(--c1); text-transform:uppercase; }
-  .input-group .hint { font-size:0.6rem; color:#444; letter-spacing:.05em; text-transform:none; margin-top:-4px; }
+  .input-group .hint { font-size:0.6rem; color:#444; letter-spacing:.05em; text-transform:none; margin-top:-2px; }
   input[type="text"] {
     background: #0a0a1a;
     border: 1px solid var(--c1);
@@ -66,7 +66,7 @@
     color: #fff;
     font-family: inherit;
     font-size: 1rem;
-    padding: 12px 16px;
+    padding: 10px 14px;
     outline: none;
     width: 100%;
     box-shadow: inset 0 0 10px #0ff1;
@@ -84,7 +84,7 @@
     font-size: 0.9rem;
     font-weight: 700;
     letter-spacing: 0.2em;
-    padding: 14px 24px;
+    padding: 13px 24px;
     text-transform: uppercase;
     transition: all .15s;
     width: 100%;
@@ -94,13 +94,20 @@
   }
   .btn:active { background: #0ff2; transform: scale(.97); }
   .btn:disabled { opacity: .3; cursor: not-allowed; }
-  .btn.danger { border-color: var(--c2); color: var(--c2); text-shadow: var(--glow2); box-shadow: 0 0 10px #f0f2; }
+  .btn.solo { border-color: var(--c4); color: var(--c4); text-shadow: 0 0 8px #0f8; box-shadow: 0 0 10px #0f82; }
+  .btn.solo:active { background: #0f82; }
+
+  .divider {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; max-width: 320px; color: #333; font-size: 0.7rem; letter-spacing: .2em;
+  }
+  .divider::before, .divider::after { content:''; flex:1; height:1px; background:#1a1a3a; }
 
   .status-box {
     background: #0a0a1a;
     border: 1px solid #1a1a3a;
     border-radius: 6px;
-    padding: 16px;
+    padding: 12px 16px;
     width: 100%;
     max-width: 320px;
     font-size: 0.75rem;
@@ -112,18 +119,18 @@
   .status-box .val.ok { color: var(--c4); }
   .status-box .val.err { color: var(--c2); }
 
-  .players-list { display:flex; flex-direction:column; gap:6px; width:100%; max-width:320px; }
+  .players-list { display:flex; flex-direction:column; gap:5px; width:100%; max-width:320px; }
   .player-slot {
     background: #0a0a1a;
     border: 1px solid #1a1a3a;
     border-radius: 4px;
-    padding: 10px 14px;
+    padding: 8px 14px;
     font-size: 0.75rem;
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  .player-slot .dot { width:8px; height:8px; border-radius:50%; background:#222; }
+  .player-slot .dot { width:8px; height:8px; border-radius:50%; background:#222; flex-shrink:0; }
   .player-slot.p1 .dot { background:var(--c1); box-shadow:var(--glow1); }
   .player-slot.p2 .dot { background:var(--c2); box-shadow:var(--glow2); }
   .player-slot.p3 .dot { background:var(--c3); box-shadow:var(--glow3); }
@@ -133,33 +140,43 @@
   .player-slot.filled .tag { color:var(--c4); }
 
   /* GAME */
-  #screen-game {
-    padding: 0;
-    justify-content: flex-start;
-    position: relative;
-  }
+  #screen-game { padding:0; justify-content:flex-start; position:relative; }
   #hud {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 10px;
+    padding: 5px 10px;
     background: #00000a;
     border-bottom: 1px solid #0ff2;
     flex-shrink: 0;
     z-index: 10;
+    min-height: 36px;
   }
-  .hud-score { font-size: 0.7rem; letter-spacing:.1em; }
-  .hud-score span { font-size: 1rem; font-weight:700; }
-  .hud-lives { display:flex; gap:3px; }
-  .hud-wave { font-size: 0.7rem; color: #888; letter-spacing:.15em; }
+  .hud-score { font-size: 0.65rem; letter-spacing:.05em; }
+  .hud-lives { display:flex; gap:3px; align-items:center; }
+  .hud-wave { font-size: 0.65rem; color: #888; letter-spacing:.1em; }
 
-  #canvas {
-    display: block;
-    width: 100%;
-    flex: 1;
-    touch-action: none;
+  /* Wave banner */
+  #wave-banner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.2rem, 6vw, 2rem);
+    font-weight: 900;
+    color: var(--c3);
+    text-shadow: var(--glow3);
+    letter-spacing: .2em;
+    text-align: center;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity .3s;
   }
+  #wave-banner.show { opacity: 1; }
+
+  #canvas { display:block; width:100%; flex:1; touch-action:none; }
 
   /* CONTROLS */
   #controls {
@@ -167,64 +184,70 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 16px;
+    padding: 6px 14px;
     background: #00000a;
     border-top: 1px solid #0ff2;
     flex-shrink: 0;
-    gap: 10px;
-    height: 80px;
+    height: 76px;
+    position: relative;
   }
   .ctrl-btn {
     background: #0a0a18;
-    border: 2px solid #1a1a40;
+    border: 2px solid #222244;
     border-radius: 8px;
-    color: #fff;
-    font-size: 1.4rem;
-    width: 64px;
-    height: 64px;
+    color: #aaa;
+    font-size: 1.3rem;
+    width: 60px;
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    transition: background .1s, border-color .1s;
     flex-shrink: 0;
+    touch-action: none;
   }
-  .ctrl-btn:active, .ctrl-btn.pressed {
-    background: #0ff2;
+  .ctrl-btn.pressed, .ctrl-btn:active {
+    background: #0ff3;
     border-color: var(--c1);
+    color: var(--c1);
   }
-  #btn-fire {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    font-size: 1.6rem;
-    border-color: var(--c2);
-    color: var(--c2);
-    margin: 0 auto;
-  }
-  #btn-fire:active, #btn-fire.pressed { background: #f0f2; }
   .ctrl-dpad { display:flex; gap:8px; }
+
+  #btn-fire {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    border-color: #440044;
+    color: var(--c2);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #btn-fire.pressed, #btn-fire:active {
+    background: #f0f3;
+    border-color: var(--c2);
+  }
 
   /* OVERLAY */
   #overlay {
     display: none;
     position: fixed; inset:0;
-    background: #000a;
+    background: #000c;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     z-index: 100;
     padding: 30px;
   }
   #overlay.active { display:flex; }
   #overlay h2 { font-size: clamp(1.5rem, 8vw, 2.5rem); text-align:center; letter-spacing:.1em; }
   #overlay .big-score { font-size: clamp(2rem, 12vw, 4rem); font-weight:900; color:var(--c1); text-shadow:var(--glow1); }
-  #overlay p { text-align:center; font-size:0.85rem; color:#888; line-height:1.6; white-space:pre-line; }
+  #overlay p { text-align:center; font-size:0.85rem; color:#888; line-height:1.7; white-space:pre-line; }
 
-  /* Stars background */
   #starfield { position:fixed; inset:0; pointer-events:none; z-index:0; }
   .screen { position:relative; z-index:1; }
 </style>
@@ -236,7 +259,16 @@
 <!-- LOBBY -->
 <div id="screen-lobby" class="screen active">
   <div class="logo">SPACE<br><span>RAIDERS</span></div>
-  <div class="subtitle">Multijugador Online · 3 Jugadores</div>
+  <div class="subtitle">1-3 Jugadores · Online / Local</div>
+
+  <div class="input-group">
+    <label>Tu nombre</label>
+    <input type="text" id="input-name" placeholder="Piloto" maxlength="12" autocomplete="off">
+  </div>
+
+  <button class="btn solo" id="btn-solo">▶ JUGAR SOLO</button>
+
+  <div class="divider">O CON AMIGOS</div>
 
   <div class="input-group">
     <label>Servidor</label>
@@ -244,21 +276,16 @@
     <input type="text" id="input-server" placeholder="tu-app.up.railway.app" autocomplete="off" spellcheck="false">
   </div>
 
-  <div class="input-group">
-    <label>Tu nombre</label>
-    <input type="text" id="input-name" placeholder="Piloto" maxlength="12" autocomplete="off">
-  </div>
+  <button class="btn" id="btn-connect">CONECTAR Y ESPERAR</button>
 
-  <button class="btn" id="btn-connect">CONECTAR</button>
-
-  <div class="status-box" id="status-box">
+  <div class="status-box" id="status-box" style="display:none">
     <div class="row"><span>Estado</span><span class="val" id="st-conn">Desconectado</span></div>
     <div class="row"><span>Jugadores</span><span class="val" id="st-players">0 / 3</span></div>
     <div class="row"><span>Tu rol</span><span class="val" id="st-role">—</span></div>
     <div class="row"><span>P2P</span><span class="val" id="st-p2p">—</span></div>
   </div>
 
-  <div class="players-list" id="players-list">
+  <div class="players-list" id="players-list" style="display:none">
     <div class="player-slot p1" id="slot-1"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J1</span></div>
     <div class="player-slot p2" id="slot-2"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J2</span></div>
     <div class="player-slot p3" id="slot-3"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J3</span></div>
@@ -268,18 +295,19 @@
 <!-- GAME -->
 <div id="screen-game" class="screen">
   <div id="hud">
-    <div class="hud-score" id="hud-scores">P1: <span id="sc1">0</span></div>
+    <div class="hud-score" id="hud-scores"></div>
     <div class="hud-wave" id="hud-wave">OLEADA 1</div>
     <div class="hud-lives" id="hud-lives"></div>
   </div>
+  <div id="wave-banner"></div>
   <canvas id="canvas"></canvas>
   <div id="controls">
     <div class="ctrl-dpad">
       <div class="ctrl-btn" id="btn-left">◀</div>
       <div class="ctrl-btn" id="btn-right">▶</div>
     </div>
-    <div class="ctrl-btn" id="btn-fire" style="font-size:1.4rem">⚡</div>
-    <div style="width:136px"></div>
+    <div class="ctrl-btn" id="btn-fire">⚡</div>
+    <div style="width:128px"></div><!-- spacer right -->
   </div>
 </div>
 
@@ -292,56 +320,61 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//  SPACE RAIDERS — Motor P2P con soporte online (WSS)
-// ═══════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  SPACE RAIDERS  —  1 a 3 jugadores, online o local
+// ════════════════════════════════════════════════════════
 
-// ── STARFIELD ──
+// ── STARFIELD ──────────────────────────────────────────
 ;(function(){
   const c = document.getElementById('starfield');
   const ctx = c.getContext('2d');
   let stars = [];
-  function resize(){ c.width=window.innerWidth; c.height=window.innerHeight; }
-  function init(){ stars=[]; for(let i=0;i<120;i++) stars.push({x:Math.random()*c.width, y:Math.random()*c.height, r:Math.random()*1.5, s:Math.random()*0.4+0.1}); }
-  function draw(){ ctx.clearRect(0,0,c.width,c.height); ctx.fillStyle='#fff'; stars.forEach(s=>{s.y+=s.s; if(s.y>c.height){s.y=0;s.x=Math.random()*c.width;} ctx.globalAlpha=0.4+Math.random()*0.2; ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();}); ctx.globalAlpha=1; requestAnimationFrame(draw); }
-  window.addEventListener('resize',()=>{resize();init();});
+  function resize(){ c.width=innerWidth; c.height=innerHeight; }
+  function init(){ stars=[]; for(let i=0;i<120;i++) stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,s:Math.random()*.5+.1}); }
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.y+=s.s; if(s.y>c.height){s.y=0;s.x=Math.random()*c.width;}
+      ctx.globalAlpha=.3+Math.random()*.3;
+      ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+    });
+    ctx.globalAlpha=1;
+    requestAnimationFrame(draw);
+  }
+  addEventListener('resize',()=>{resize();init();});
   resize(); init(); draw();
 })();
 
-// ── NETWORK ──
+// ── PLAYER COLORS ──────────────────────────────────────
+const PCOLORS = ['#00ffff','#ff00ff','#ffff00'];
+const PGLOW   = ['#0ff','#f0f','#ff0'];
+
+// ── NET (WebRTC P2P + WS signaling) ────────────────────
 const NET = {
   ws: null,
   myId: null,
-  myNum: null,
+  myNum: 1,          // default 1 for solo
   peers: {},
   channels: {},
-  serverUrl: null,
-  isHost: false,
-  playerNames: {},
+  isHost: true,      // default true for solo
   allIds: [],
+  numPlayers: 1,     // how many players joined
 
   connect(serverAddr, name) {
     return new Promise((resolve, reject) => {
-      // ── Auto-detección ws:// vs wss:// ──────────────────────
-      // Si el usuario ya puso el protocolo, lo respetamos
       let url;
       if (serverAddr.startsWith('ws://') || serverAddr.startsWith('wss://')) {
         url = serverAddr;
       } else {
-        // IP local → ws://, dominio público → wss://
-        const isLocal = /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|\d+\.\d+\.\d+\.\d+:\d+$)/.test(serverAddr);
-        const proto = isLocal ? 'ws' : 'wss';
-        url = `${proto}://${serverAddr}`;
+        const isLocal = /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/.test(serverAddr);
+        url = `${isLocal ? 'ws' : 'wss'}://${serverAddr}`;
       }
-
-      UI.updateStatus(`Conectando a ${url}...`, null, null, null);
+      UI.updateStatus(`Conectando...`, null, null, null);
       NET.ws = new WebSocket(url);
-      NET.ws.onopen = () => {
-        NET.ws.send(JSON.stringify({ type: 'set_name', name }));
-        resolve();
-      };
+      NET.ws.onopen = () => { NET.ws.send(JSON.stringify({type:'set_name',name})); resolve(); };
       NET.ws.onerror = () => reject(new Error(`No se pudo conectar a ${url}`));
-      NET.ws.onmessage = (e) => NET._onSignal(JSON.parse(e.data));
+      NET.ws.onmessage = e => NET._onSignal(JSON.parse(e.data));
       NET.ws.onclose = () => { if(GAME.running) GAME.endGame('Conexión perdida'); };
     });
   },
@@ -349,217 +382,203 @@ const NET = {
   _onSignal(msg) {
     switch(msg.type) {
       case 'welcome':
-        NET.myId = msg.id;
-        NET.myNum = msg.playerNum;
+        NET.myId   = msg.id;
+        NET.myNum  = msg.playerNum;
         NET.isHost = (msg.playerNum === 1);
-        UI.updateStatus('Conectado ✓', msg.totalPlayers + ' / 3', NET.isHost ? 'HOST' : 'Cliente', '—');
+        NET.numPlayers = msg.totalPlayers;
+        UI.updateStatus('Conectado ✓', msg.totalPlayers+' / 3', NET.isHost?'HOST':'Cliente', '—');
         UI.updateSlot(msg.playerNum, MY_NAME, true);
+        // host can start with whoever is connected after a timeout
+        if(NET.isHost) NET._startHostTimer();
         break;
 
       case 'player_joined':
-        UI.updateStatus(null, msg.totalPlayers + ' / 3', null, null);
+        NET.numPlayers = msg.totalPlayers;
+        UI.updateStatus(null, msg.totalPlayers+' / 3', null, null);
+        UI.updateSlot(msg.playerNum, '...', true);
+        if(NET.isHost) {
+          clearTimeout(NET._hostTimer);
+          NET._startHostTimer();
+        }
         break;
 
       case 'start_signaling':
         NET.allIds = msg.players.sort((a,b)=>a.playerNum-b.playerNum).map(p=>p.id);
-        UI.updateStatus('Conectado ✓', '3 / 3 ✓', null, 'Iniciando P2P...');
+        NET.numPlayers = msg.players.length;
+        UI.updateStatus('Conectado ✓', NET.numPlayers+' / 3 ✓', null, 'P2P...');
         msg.players.forEach(p => {
-          if(p.id !== NET.myId) NET._createPeer(p.id, p.playerNum, NET.isHost || (NET.myNum < p.playerNum));
+          if(p.id !== NET.myId)
+            NET._createPeer(p.id, p.playerNum, NET.isHost || (NET.myNum < p.playerNum));
         });
         break;
 
-      case 'offer':
-        NET._handleOffer(msg);
-        break;
-      case 'answer':
-        NET._handleAnswer(msg);
-        break;
-      case 'ice_candidate':
-        NET._handleIce(msg);
-        break;
+      case 'offer':       NET._handleOffer(msg); break;
+      case 'answer':      NET._handleAnswer(msg); break;
+      case 'ice_candidate': NET._handleIce(msg); break;
 
       case 'player_left':
         if(GAME.running) GAME.endGame('Un jugador se desconectó');
         break;
 
-      case 'error':
-        UI.setError(msg.message);
-        break;
+      case 'error': UI.setError(msg.message); break;
     }
   },
 
+  // Host waits up to 8s then starts with whoever is connected
+  _hostTimer: null,
+  _startHostTimer() {
+    clearTimeout(NET._hostTimer);
+    NET._hostTimer = setTimeout(() => {
+      // If nobody else connected, start solo via network (just me)
+      if(Object.keys(NET.channels).length === 0) {
+        // No peers at all — start as solo-network game
+        GAME.startAsHost();
+      }
+    }, 8000);
+  },
+
   _rtcConfig() {
-    return {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun.cloudflare.com:3478' }
-      ]
-    };
+    return { iceServers: [
+      {urls:'stun:stun.l.google.com:19302'},
+      {urls:'stun:stun1.l.google.com:19302'},
+      {urls:'stun:stun.cloudflare.com:3478'}
+    ]};
   },
 
   _createPeer(remoteId, remoteNum, initiator) {
     const pc = new RTCPeerConnection(NET._rtcConfig());
     NET.peers[remoteId] = pc;
-
-    pc.onicecandidate = (e) => {
-      if(e.candidate) {
-        NET.ws.send(JSON.stringify({ type:'ice_candidate', to:remoteId, candidate:e.candidate }));
-      }
+    pc.onicecandidate = e => {
+      if(e.candidate) NET.ws.send(JSON.stringify({type:'ice_candidate',to:remoteId,candidate:e.candidate}));
     };
-
-    pc.onconnectionstatechange = () => {
-      NET._checkAllConnected();
-    };
-
+    pc.onconnectionstatechange = () => NET._checkAllConnected();
     if(initiator) {
-      const dc = pc.createDataChannel('game', { ordered: false, maxRetransmits: 0 });
+      const dc = pc.createDataChannel('game',{ordered:false,maxRetransmits:0});
       NET.channels[remoteId] = dc;
       NET._setupChannel(dc, remoteId);
-
-      pc.createOffer().then(offer => {
-        pc.setLocalDescription(offer);
-        NET.ws.send(JSON.stringify({ type:'offer', to:remoteId, sdp:offer }));
-      });
+      pc.createOffer().then(o=>{pc.setLocalDescription(o); NET.ws.send(JSON.stringify({type:'offer',to:remoteId,sdp:o}));});
     } else {
-      pc.ondatachannel = (e) => {
-        NET.channels[remoteId] = e.channel;
-        NET._setupChannel(e.channel, remoteId);
-      };
+      pc.ondatachannel = e => { NET.channels[remoteId]=e.channel; NET._setupChannel(e.channel,remoteId); };
     }
   },
 
   _setupChannel(dc, remoteId) {
-    dc.onopen = () => NET._checkAllConnected();
+    dc.onopen  = () => NET._checkAllConnected();
     dc.onclose = () => { if(GAME.running) GAME.endGame('P2P desconectado'); };
-    dc.onmessage = (e) => GAME.onNetMsg(JSON.parse(e.data), remoteId);
+    dc.onmessage = e => GAME.onNetMsg(JSON.parse(e.data), remoteId);
   },
 
   async _handleOffer(msg) {
     if(!NET.peers[msg.from]) NET._createPeer(msg.from, null, false);
     const pc = NET.peers[msg.from];
     await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    NET.ws.send(JSON.stringify({ type:'answer', to:msg.from, sdp:answer }));
+    const ans = await pc.createAnswer();
+    await pc.setLocalDescription(ans);
+    NET.ws.send(JSON.stringify({type:'answer',to:msg.from,sdp:ans}));
   },
-
   async _handleAnswer(msg) {
     const pc = NET.peers[msg.from];
     if(pc) await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
   },
-
   async _handleIce(msg) {
     const pc = NET.peers[msg.from];
-    if(pc) try { await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch {}
+    if(pc) try { await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch{}
   },
 
   _checkAllConnected() {
     const needed = NET.allIds.filter(id => id !== NET.myId);
-    const ready = needed.every(id => NET.channels[id] && NET.channels[id].readyState === 'open');
-    if(ready && needed.length > 0) {
-      UI.updateStatus(null, null, null, 'P2P OK ✓');
-      if(NET.isHost) GAME.start();
+    if(needed.length === 0) return;
+    const ready = needed.every(id => NET.channels[id] && NET.channels[id].readyState==='open');
+    if(ready) {
+      clearTimeout(NET._hostTimer);
+      UI.updateStatus(null,null,null,'P2P OK ✓');
+      if(NET.isHost) GAME.startAsHost();
     }
   },
 
   broadcast(data) {
     const msg = JSON.stringify(data);
     Object.values(NET.channels).forEach(dc => {
-      if(dc.readyState === 'open') try { dc.send(msg); } catch {}
+      if(dc.readyState==='open') try{dc.send(msg);}catch{}
     });
-  },
-
-  sendTo(id, data) {
-    const dc = NET.channels[id];
-    if(dc && dc.readyState === 'open') try { dc.send(JSON.stringify(data)); } catch {}
   }
 };
 
-// ── UI HELPERS ──
+// ── UI ─────────────────────────────────────────────────
 const UI = {
-  updateStatus(conn, players, role, p2p) {
-    if(conn !== null) {
-      const el = document.getElementById('st-conn');
-      el.textContent = conn;
-      el.className = 'val ' + (conn.includes('✓')||conn==='Conectado' ? 'ok' : conn.includes('Conectando') ? 'warn' : 'ok');
-    }
-    if(players !== null) document.getElementById('st-players').textContent = players;
-    if(role !== null) document.getElementById('st-role').textContent = role;
-    if(p2p !== null) {
-      const el = document.getElementById('st-p2p');
-      el.textContent = p2p;
-      el.className = 'val ' + (p2p.includes('OK') ? 'ok' : 'warn');
-    }
+  updateStatus(conn,players,role,p2p) {
+    if(conn!==null){const el=document.getElementById('st-conn');el.textContent=conn;el.className='val '+(conn.includes('✓')?'ok':conn.includes('⚠')?'err':'warn');}
+    if(players!==null) document.getElementById('st-players').textContent=players;
+    if(role!==null) document.getElementById('st-role').textContent=role;
+    if(p2p!==null){const el=document.getElementById('st-p2p');el.textContent=p2p;el.className='val '+(p2p.includes('OK')?'ok':'warn');}
   },
-  updateSlot(num, name, filled) {
-    const slot = document.getElementById('slot-' + num);
-    if(!slot) return;
-    slot.querySelector('.name').textContent = name || 'Esperando...';
-    if(filled) slot.classList.add('filled');
-    else slot.classList.remove('filled');
+  updateSlot(num,name,filled) {
+    const s=document.getElementById('slot-'+num); if(!s)return;
+    s.querySelector('.name').textContent=name||'Esperando...';
+    filled?s.classList.add('filled'):s.classList.remove('filled');
   },
   setError(msg) {
-    const el = document.getElementById('st-conn');
-    el.textContent = '⚠ ' + msg;
-    el.className = 'val err';
+    const el=document.getElementById('st-conn');
+    el.textContent='⚠ '+msg; el.className='val err';
   },
   showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + id).classList.add('active');
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById('screen-'+id).classList.add('active');
   },
-  showOverlay(title, score, msg) {
-    document.getElementById('overlay-title').textContent = title;
-    document.getElementById('overlay-score').textContent = score;
-    document.getElementById('overlay-msg').textContent = msg;
+  showOverlay(title,score,msg) {
+    document.getElementById('overlay-title').textContent=title;
+    document.getElementById('overlay-score').textContent=score;
+    document.getElementById('overlay-msg').textContent=msg;
     document.getElementById('overlay').classList.add('active');
   },
-  hideOverlay() { document.getElementById('overlay').classList.remove('active'); }
+  showWaveBanner(wave) {
+    const b=document.getElementById('wave-banner');
+    b.textContent = wave===1 ? '¡PREPARADO!' : `OLEADA ${wave}`;
+    b.classList.add('show');
+    setTimeout(()=>b.classList.remove('show'), 1800);
+  }
 };
 
-// ── PLAYER COLORS ──
-const PCOLORS = ['#00ffff','#ff00ff','#ffff00'];
-const PGLOW   = ['#0ff','#f0f','#ff0'];
-
-// ── GAME ENGINE ──
+// ── GAME ───────────────────────────────────────────────
 const GAME = {
-  canvas: null,
-  ctx: null,
+  canvas: null, ctx: null,
   running: false,
   wave: 1,
+  numActivePlayers: 1,   // players actually in game
 
-  invaders: [],
-  invaderDir: 1,
-  invaderSpeed: 1,
+  invaders: [], invaderDir: 1, invaderSpeed: 1,
   invaderDropTimer: 0,
-  bullets: [],
-  invaderBullets: [],
+  bullets: [], invaderBullets: [],
   shields: [],
-  scores: [0, 0, 0],
-  lives: [3, 3, 3],
+  scores: [0,0,0],
+  lives: [3,3,3],
 
-  myShip: { x: 0, y: 0, w: 32, h: 20 },
-  remotePlayers: {},
+  myShip: {x:0, y:0},
+  remotePlayers: {},    // id → {x,y,num}
   bulletIdCounter: 0,
 
-  lastTime: 0,
-  stateTimer: 0,
-  fireTimer: 0,
-  invaderFireTimer: 0,
+  lastTime: 0, stateTimer: 0,
+  fireTimer: 0, invaderFireTimer: 0,
+  waveTransition: false,
 
-  keys: { left: false, right: false, fire: false },
+  keys: {left:false, right:false, fire:false},
 
   init() {
     GAME.canvas = document.getElementById('canvas');
-    GAME.ctx = GAME.canvas.getContext('2d');
+    GAME.ctx    = GAME.canvas.getContext('2d');
     GAME.resize();
-    window.addEventListener('resize', GAME.resize);
+    addEventListener('resize', GAME.resize);
     GAME.setupControls();
   },
 
   resize() {
-    GAME.canvas.width = GAME.canvas.offsetWidth;
-    GAME.canvas.height = GAME.canvas.offsetHeight;
+    const w = GAME.canvas.offsetWidth;
+    const h = GAME.canvas.offsetHeight;
+    // Only update if canvas is actually visible (non-zero size)
+    if(w > 0 && h > 0) {
+      GAME.canvas.width  = w;
+      GAME.canvas.height = h;
+    }
     if(GAME.running) GAME.repositionShip();
   },
 
@@ -567,70 +586,94 @@ const GAME = {
   H() { return GAME.canvas.height; },
 
   repositionShip() {
-    const num = NET.myNum;
-    const positions = [0.25, 0.5, 0.75];
-    GAME.myShip.x = GAME.W() * positions[num-1];
-    GAME.myShip.y = GAME.H() - 40;
+    const n   = NET.myNum;
+    const np  = GAME.numActivePlayers;
+    // spread ships across bottom based on number of players
+    const positions = np===1 ? [0.5] : np===2 ? [0.3,0.7] : [0.2,0.5,0.8];
+    const idx = Math.min(n-1, positions.length-1);
+    GAME.myShip.x = GAME.W() * positions[idx];
+    GAME.myShip.y = GAME.H() - 38;
   },
 
-  start() {
-    GAME.running = true;
-    GAME.scores = [0, 0, 0];
-    GAME.lives = [3, 3, 3];
-    GAME.wave = 1;
+  // Called by host (solo or network)
+  startAsHost() {
+    GAME.numActivePlayers = NET.numPlayers;
+    // Show screen FIRST so canvas has real dimensions before buildWave
+    UI.showScreen('game');
+    GAME.resize(); // force canvas size update
+    GAME._initState(1);
+    NET.broadcast({type:'game_start', wave:1, numPlayers: GAME.numActivePlayers});
+    UI.showWaveBanner(1);
+    GAME.lastTime = performance.now();
+    GAME.running  = true;
+    requestAnimationFrame(GAME.loop);
+  },
+
+  // Called on non-host clients receiving game_start
+  startAsClient(numPlayers, wave) {
+    GAME.numActivePlayers = numPlayers;
+    UI.showScreen('game');
+    GAME.resize();
+    GAME._initState(wave);
+    UI.showWaveBanner(wave);
+    GAME.lastTime = performance.now();
+    GAME.running  = true;
+    requestAnimationFrame(GAME.loop);
+  },
+
+  _initState(wave) {
+    GAME.scores  = [0,0,0];
+    GAME.lives   = [3,3,3];
+    GAME.wave    = wave;
     GAME.bullets = [];
     GAME.invaderBullets = [];
+    GAME.remotePlayers  = {};
+    GAME.fireTimer      = 0;
+    GAME.waveTransition = false;
     GAME.repositionShip();
-    GAME.buildWave(1);
-
-    NET.broadcast({ type: 'game_start', wave: 1 });
-
-    UI.showScreen('game');
-    GAME.lastTime = performance.now();
-    requestAnimationFrame(GAME.loop);
+    GAME.buildWave(wave);
   },
 
   buildWave(wave) {
     GAME.invaders = [];
-    GAME.shields = [];
-    const cols = 10, rows = Math.min(3 + Math.floor(wave/2), 6);
-    const W = GAME.W();
-    const spacingX = Math.min(44, (W - 60) / cols);
-    const startX = (W - spacingX * (cols-1)) / 2;
+    GAME.shields  = [];
+    GAME.waveTransition = false;
 
-    for(let r=0; r<rows; r++) {
-      for(let c=0; c<cols; c++) {
+    const cols = 10;
+    const rows = Math.min(2 + Math.floor((wave+1)/2), 6);
+    const W = GAME.W();
+    const spacingX = Math.min(42, (W - 40) / cols);
+    const startX = (W - spacingX*(cols-1)) / 2;
+
+    for(let r=0;r<rows;r++) {
+      for(let c=0;c<cols;c++) {
         GAME.invaders.push({
-          x: startX + c * spacingX,
-          y: 60 + r * 32,
-          type: r < 1 ? 2 : r < 3 ? 1 : 0,
-          alive: true,
-          animFrame: 0,
-          id: r * 100 + c
+          x: startX + c*spacingX,
+          y: 55 + r*30,
+          type: r===0 ? 2 : r<3 ? 1 : 0,
+          alive: true, animFrame: 0,
+          id: wave*10000 + r*100 + c    // unique per wave
         });
       }
     }
 
-    const shieldPositions = [0.2, 0.5, 0.8];
-    shieldPositions.forEach((px, i) => {
-      GAME.shields.push({
-        x: GAME.W() * px - 24,
-        y: GAME.H() - 80,
-        hp: 4,
-        id: i
-      });
+    // Shields — one per player position
+    const np = GAME.numActivePlayers;
+    const spos = np===1 ? [0.5] : np===2 ? [0.3,0.7] : [0.2,0.5,0.8];
+    spos.forEach((px,i)=>{
+      GAME.shields.push({x:GAME.W()*px-24, y:GAME.H()-78, hp:4, id:i});
     });
 
-    GAME.invaderDir = 1;
-    GAME.invaderSpeed = 0.4 + wave * 0.15;
-    GAME.invaderFireTimer = 0;
+    GAME.invaderDir   = 1;
+    GAME.invaderSpeed = 0.5 + wave*0.18;
+    GAME.invaderFireTimer = 60;
+    GAME.invaderDropTimer = 0;
   },
 
   loop(ts) {
     if(!GAME.running) return;
-    const dt = Math.min((ts - GAME.lastTime) / 16.67, 3);
+    const dt = Math.min((ts - GAME.lastTime)/16.67, 3);
     GAME.lastTime = ts;
-
     GAME.update(dt);
     GAME.render();
     GAME.updateHUD();
@@ -638,380 +681,481 @@ const GAME = {
   },
 
   update(dt) {
-    const W = GAME.W(), H = GAME.H();
+    if(GAME.waveTransition) return; // pause during wave change
 
-    const speed = 3.5 * dt;
+    const W=GAME.W(), H=GAME.H();
+
+    // ── Move my ship ──
+    const speed = 4 * dt;
     if(GAME.keys.left)  GAME.myShip.x = Math.max(16, GAME.myShip.x - speed);
-    if(GAME.keys.right) GAME.myShip.x = Math.min(W - 16, GAME.myShip.x + speed);
+    if(GAME.keys.right) GAME.myShip.x = Math.min(W-16, GAME.myShip.x + speed);
 
+    // ── Fire ──
     GAME.fireTimer -= dt;
-    if(GAME.keys.fire && GAME.fireTimer <= 0 && GAME.lives[NET.myNum-1] > 0) {
-      GAME.fireTimer = 18;
-      const bid = NET.myNum * 10000 + (GAME.bulletIdCounter++ % 9000);
-      const bullet = { x: GAME.myShip.x, y: GAME.myShip.y - 14, vx: 0, vy: -6, owner: NET.myNum, id: bid };
+    const myIdx = NET.myNum - 1;
+    if(GAME.keys.fire && GAME.fireTimer <= 0 && GAME.lives[myIdx] > 0) {
+      GAME.fireTimer = 16;
+      const bid = NET.myNum*10000 + (GAME.bulletIdCounter++ % 9000);
+      const bullet = {x:GAME.myShip.x, y:GAME.myShip.y-16, vx:0, vy:-7, owner:NET.myNum, id:bid};
       GAME.bullets.push(bullet);
-      NET.broadcast({ type:'bullet', bullet });
+      NET.broadcast({type:'bullet', bullet});
     }
 
-    NET.broadcast({ type:'pos', x: GAME.myShip.x, y: GAME.myShip.y, num: NET.myNum });
+    // Broadcast position
+    NET.broadcast({type:'pos', x:GAME.myShip.x, y:GAME.myShip.y, num:NET.myNum});
 
-    GAME.bullets = GAME.bullets.filter(b => {
-      b.x += b.vx * dt; b.y += b.vy * dt;
-      return b.y > -10 && b.y < H + 10;
+    // ── Move bullets ──
+    GAME.bullets = GAME.bullets.filter(b=>{
+      b.x += b.vx*dt; b.y += b.vy*dt;
+      return b.y > -20 && b.y < H+20;
     });
 
+    // ── Host: invader logic ──
     if(NET.isHost) {
       GAME.stateTimer -= dt;
 
-      let hitEdge = false;
-      const alive = GAME.invaders.filter(inv => inv.alive);
-      alive.forEach(inv => { inv.x += GAME.invaderSpeed * GAME.invaderDir * dt; });
-      alive.forEach(inv => {
-        if(inv.x > W - 20 || inv.x < 20) hitEdge = true;
+      // Move invaders
+      const alive = GAME.invaders.filter(i=>i.alive);
+      if(alive.length > 0) {
+        alive.forEach(inv=>{ inv.x += GAME.invaderSpeed * GAME.invaderDir * dt; });
+        const hitEdge = alive.some(inv=> inv.x > W-18 || inv.x < 18);
+        if(hitEdge) {
+          GAME.invaderDir *= -1;
+          alive.forEach(inv=>{ inv.y += 12; });
+          // Speed up slightly each bounce
+          GAME.invaderSpeed = Math.min(GAME.invaderSpeed * 1.02, 8);
+        }
+
+        // Animate
+        GAME.invaderDropTimer += dt;
+        if(GAME.invaderDropTimer > 35) {
+          GAME.invaderDropTimer = 0;
+          alive.forEach(inv=>inv.animFrame^=1);
+        }
+
+        // Invader fire — more frequent as fewer remain
+        GAME.invaderFireTimer -= dt;
+        const fireRate = Math.max(15, 70 - GAME.wave*4 - (1 - alive.length/GAME.invaders.length)*30);
+        if(GAME.invaderFireTimer <= 0) {
+          GAME.invaderFireTimer = fireRate;
+          // Pick shooter from bottom row of each column
+          const cols = {};
+          alive.forEach(inv=>{
+            const col = Math.round(inv.x/10);
+            if(!cols[col] || inv.y > cols[col].y) cols[col]=inv;
+          });
+          const shooters = Object.values(cols);
+          if(shooters.length > 0) {
+            const shooter = shooters[Math.floor(Math.random()*shooters.length)];
+            const b = {x:shooter.x, y:shooter.y+12, vx:(Math.random()-.5)*2, vy:3+GAME.wave*0.2,
+                       id:90000+(GAME.bulletIdCounter++%9000)};
+            GAME.invaderBullets.push(b);
+          }
+        }
+      }
+
+      // Move invader bullets
+      GAME.invaderBullets = GAME.invaderBullets.filter(b=>{
+        b.x += b.vx*dt; b.y += b.vy*dt;
+        return b.y < H+20;
       });
-      if(hitEdge) {
-        GAME.invaderDir *= -1;
-        alive.forEach(inv => { inv.y += 10; });
-      }
 
-      GAME.invaderDropTimer += dt;
-      if(GAME.invaderDropTimer > 40) {
-        GAME.invaderDropTimer = 0;
-        alive.forEach(inv => inv.animFrame ^= 1);
-      }
-
-      GAME.invaderFireTimer -= dt;
-      if(GAME.invaderFireTimer <= 0 && alive.length > 0) {
-        GAME.invaderFireTimer = Math.max(30, 90 - GAME.wave * 5);
-        const shooter = alive[Math.floor(Math.random() * alive.length)];
-        const b = { x: shooter.x, y: shooter.y + 10, vx: (Math.random()-.5)*2, vy: 3, id: 90000 + (GAME.bulletIdCounter++ % 9000) };
-        GAME.invaderBullets.push(b);
-      }
-
-      GAME.invaderBullets = GAME.invaderBullets.filter(b => {
-        b.x += b.vx * dt; b.y += b.vy * dt;
-        return b.y < H + 20;
-      });
-
-      GAME.bullets.forEach(bull => {
-        GAME.invaders.forEach(inv => {
-          if(!inv.alive) return;
-          if(Math.abs(bull.x - inv.x) < 14 && Math.abs(bull.y - inv.y) < 10) {
+      // ── Collisions: player bullets vs invaders ──
+      GAME.bullets.forEach(bull=>{
+        if(bull.y < -10) return;
+        GAME.invaders.forEach(inv=>{
+          if(!inv.alive || bull.y < -10) return;
+          if(Math.abs(bull.x-inv.x)<14 && Math.abs(bull.y-inv.y)<10) {
             inv.alive = false;
             bull.y = -999;
-            const pts = [10, 20, 30][inv.type];
-            GAME.scores[bull.owner - 1] += pts;
+            GAME.scores[bull.owner-1] += [10,20,30][inv.type];
           }
         });
       });
 
-      GAME.bullets.forEach(bull => {
-        GAME.shields.forEach(sh => {
-          if(sh.hp <= 0) return;
-          if(bull.x > sh.x && bull.x < sh.x+48 && bull.y > sh.y && bull.y < sh.y+18) {
-            sh.hp--;
-            bull.y = -999;
+      // ── Collisions: player bullets vs shields ──
+      GAME.bullets.forEach(bull=>{
+        if(bull.y < -10) return;
+        GAME.shields.forEach(sh=>{
+          if(sh.hp<=0) return;
+          if(bull.x>sh.x && bull.x<sh.x+48 && bull.y>sh.y && bull.y<sh.y+18) {
+            sh.hp--; bull.y=-999;
           }
         });
       });
 
-      GAME.invaderBullets.forEach(bull => {
-        GAME.shields.forEach(sh => {
-          if(sh.hp <= 0) return;
-          if(bull.x > sh.x && bull.x < sh.x+48 && bull.y > sh.y && bull.y < sh.y+18) {
-            sh.hp--;
-            bull.y = -999;
+      // ── Collisions: invader bullets vs shields ──
+      GAME.invaderBullets.forEach(bull=>{
+        GAME.shields.forEach(sh=>{
+          if(sh.hp<=0) return;
+          if(bull.x>sh.x && bull.x<sh.x+48 && bull.y>sh.y && bull.y<sh.y+18) {
+            sh.hp--; bull.y=H+100;
           }
         });
       });
 
+      // ── Collisions: invader bullets vs ships ──
       const allShips = [
-        { x: GAME.myShip.x, y: GAME.myShip.y, num: NET.myNum },
+        {x:GAME.myShip.x, y:GAME.myShip.y, num:NET.myNum},
         ...Object.values(GAME.remotePlayers)
       ];
-      GAME.invaderBullets.forEach(bull => {
-        allShips.forEach(ship => {
-          if(Math.abs(bull.x - ship.x) < 14 && Math.abs(bull.y - ship.y) < 12) {
-            const idx = ship.num - 1;
-            if(GAME.lives[idx] > 0) {
-              GAME.lives[idx]--;
-              bull.y = H + 100;
-            }
+      GAME.invaderBullets.forEach(bull=>{
+        allShips.forEach(ship=>{
+          const idx = ship.num-1;
+          if(GAME.lives[idx]<=0) return;
+          if(Math.abs(bull.x-ship.x)<14 && Math.abs(bull.y-ship.y)<14) {
+            GAME.lives[idx]--;
+            bull.y = H+100;
           }
         });
       });
 
-      const reachedBottom = alive.some(inv => inv.y > H - 90);
-      if(reachedBottom) GAME.lives = [0, 0, 0];
-
-      if(alive.length === 0) {
-        GAME.wave++;
-        GAME.buildWave(GAME.wave);
-        NET.broadcast({ type:'wave', wave: GAME.wave });
+      // Invaders reach bottom → instant lose
+      if(alive.some(inv=>inv.y > H-85)) {
+        GAME.lives = GAME.lives.map((_,i)=> i<GAME.numActivePlayers ? 0 : GAME.lives[i]);
       }
 
+      // ── Wave clear ──
+      const aliveNow = GAME.invaders.filter(i=>i.alive);
+      if(aliveNow.length===0 && !GAME.waveTransition) {
+        GAME.waveTransition = true;
+        GAME.wave++;
+        // Give brief pause before next wave
+        setTimeout(()=>{
+          if(!GAME.running) return;
+          GAME.buildWave(GAME.wave);
+          NET.broadcast({type:'wave', wave:GAME.wave, shields: GAME.shields});
+          UI.showWaveBanner(GAME.wave);
+        }, 1800);
+      }
+
+      // ── Sync state to clients ──
       if(GAME.stateTimer <= 0) {
         GAME.stateTimer = 3;
         NET.broadcast({
-          type: 'state',
-          invaders: GAME.invaders.map(i => ({ id:i.id, alive:i.alive, x:i.x, y:i.y, animFrame:i.animFrame })),
+          type:'state',
+          invaders: GAME.invaders.map(i=>({id:i.id,alive:i.alive,x:i.x,y:i.y,animFrame:i.animFrame})),
           invaderBullets: GAME.invaderBullets,
-          shields: GAME.shields.map(s => ({ id:s.id, hp:s.hp })),
+          shields: GAME.shields.map(s=>({id:s.id,hp:s.hp,x:s.x,y:s.y})),
           scores: GAME.scores,
           lives: GAME.lives,
           wave: GAME.wave
         });
       }
 
-      if(GAME.lives.every(l => l <= 0)) {
+      // ── Game over: only active players count ──
+      const activeDead = GAME.lives.slice(0, GAME.numActivePlayers).every(l=>l<=0);
+      if(activeDead) {
+        NET.broadcast({type:'gameover', scores:GAME.scores});
         GAME.endGame('GAME OVER');
-        NET.broadcast({ type:'gameover', scores: GAME.scores });
         return;
       }
     }
   },
 
+  // ── Receive net messages (non-host clients) ──
   onNetMsg(msg, fromId) {
     switch(msg.type) {
       case 'game_start':
-        if(!NET.isHost) {
-          GAME.running = true;
-          GAME.scores = [0,0,0];
-          GAME.lives = [3,3,3];
-          GAME.wave = msg.wave;
-          GAME.bullets = [];
-          GAME.invaderBullets = [];
-          GAME.repositionShip();
-          GAME.buildWave(msg.wave);
-          UI.showScreen('game');
-          GAME.lastTime = performance.now();
-          requestAnimationFrame(GAME.loop);
-        }
+        if(!NET.isHost) GAME.startAsClient(msg.numPlayers, msg.wave);
         break;
 
       case 'pos':
-        if(!GAME.remotePlayers[fromId]) GAME.remotePlayers[fromId] = {};
-        GAME.remotePlayers[fromId].x = msg.x;
-        GAME.remotePlayers[fromId].y = msg.y;
+        if(!GAME.remotePlayers[fromId]) GAME.remotePlayers[fromId]={};
+        GAME.remotePlayers[fromId].x   = msg.x;
+        GAME.remotePlayers[fromId].y   = msg.y;
         GAME.remotePlayers[fromId].num = msg.num;
         break;
 
       case 'bullet':
-        if(!GAME.bullets.find(b => b.id === msg.bullet.id)) {
+        if(!GAME.bullets.find(b=>b.id===msg.bullet.id))
           GAME.bullets.push(msg.bullet);
-        }
         break;
 
       case 'state':
         if(NET.isHost) break;
-        msg.invaders.forEach(data => {
-          const inv = GAME.invaders.find(i => i.id === data.id);
-          if(inv) { inv.alive = data.alive; inv.x = data.x; inv.y = data.y; inv.animFrame = data.animFrame; }
+        // Reconcile invaders
+        msg.invaders.forEach(d=>{
+          const inv = GAME.invaders.find(i=>i.id===d.id);
+          if(inv){ inv.alive=d.alive; inv.x=d.x; inv.y=d.y; inv.animFrame=d.animFrame; }
         });
         GAME.invaderBullets = msg.invaderBullets;
-        msg.shields.forEach(data => {
-          const sh = GAME.shields.find(s => s.id === data.id);
-          if(sh) sh.hp = data.hp;
+        msg.shields.forEach(d=>{
+          const sh = GAME.shields.find(s=>s.id===d.id);
+          if(sh){ sh.hp=d.hp; sh.x=d.x; sh.y=d.y; }
         });
         GAME.scores = msg.scores;
-        GAME.lives = msg.lives;
-        GAME.wave = msg.wave;
+        GAME.lives  = msg.lives;
+        GAME.wave   = msg.wave;
         break;
 
       case 'wave':
-        GAME.wave = msg.wave;
-        if(!NET.isHost) GAME.buildWave(msg.wave);
+        if(!NET.isHost) {
+          GAME.wave = msg.wave;
+          GAME.buildWave(msg.wave);
+          // Override shields from host
+          if(msg.shields) GAME.shields = msg.shields;
+          UI.showWaveBanner(msg.wave);
+        }
         break;
 
       case 'gameover':
-        GAME.scores = msg.scores;
-        GAME.endGame('GAME OVER');
+        if(!NET.isHost) { GAME.scores=msg.scores; GAME.endGame('GAME OVER'); }
         break;
     }
   },
 
   endGame(reason) {
     GAME.running = false;
-    const myScore = GAME.scores[NET.myNum-1];
-    const maxScore = Math.max(...GAME.scores);
-    const winner = GAME.scores.indexOf(maxScore) + 1;
-    UI.showOverlay(reason, myScore, `Ganador: J${winner} con ${maxScore} pts\nTu puntuación: ${myScore}`);
+    const myScore  = GAME.scores[NET.myNum-1];
+    const maxScore = Math.max(...GAME.scores.slice(0,GAME.numActivePlayers));
+    const winnerIdx= GAME.scores.indexOf(maxScore);
+    let msg;
+    if(GAME.numActivePlayers===1) {
+      msg = `Puntuación: ${myScore}\nOleada alcanzada: ${GAME.wave}`;
+    } else {
+      msg = `Ganador: J${winnerIdx+1} con ${maxScore} pts\nTu puntuación: ${myScore}`;
+    }
+    UI.showOverlay(reason, myScore, msg);
   },
 
+  // ── RENDER ──────────────────────────────────────────
   render() {
-    const ctx = GAME.ctx;
-    const W = GAME.W(), H = GAME.H();
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = '#000008';
-    ctx.fillRect(0, 0, W, H);
+    const ctx=GAME.ctx, W=GAME.W(), H=GAME.H();
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#000008';
+    ctx.fillRect(0,0,W,H);
 
-    GAME.shields.forEach(sh => {
-      if(sh.hp <= 0) return;
-      const alpha = sh.hp / 4;
-      ctx.fillStyle = `rgba(0,255,100,${alpha})`;
-      ctx.shadowColor = '#0f8';
-      ctx.shadowBlur = 6;
-      ctx.fillRect(sh.x, sh.y, 48, 18);
-      ctx.shadowBlur = 0;
+    // Shields
+    GAME.shields.forEach(sh=>{
+      if(sh.hp<=0) return;
+      ctx.shadowColor='#0f8'; ctx.shadowBlur=6;
+      ctx.fillStyle=`rgba(0,200,80,${sh.hp/4})`;
+      // Draw bunker shape
+      ctx.fillRect(sh.x, sh.y+6, 48, 12);
+      ctx.fillRect(sh.x+8, sh.y, 32, 18);
+      // notch
+      ctx.clearRect(sh.x+14, sh.y+12, 8, 6);
+      ctx.clearRect(sh.x+26, sh.y+12, 8, 6);
+      ctx.shadowBlur=0;
     });
 
-    GAME.invaders.forEach(inv => {
+    // Invaders
+    GAME.invaders.forEach(inv=>{
       if(!inv.alive) return;
       GAME.drawInvader(ctx, inv.x, inv.y, inv.type, inv.animFrame);
     });
 
-    ctx.fillStyle = '#f84';
-    GAME.invaderBullets.forEach(b => {
-      ctx.shadowColor = '#f84'; ctx.shadowBlur = 6;
-      ctx.fillRect(b.x-2, b.y-6, 3, 10);
-      ctx.shadowBlur = 0;
+    // Invader bullets
+    GAME.invaderBullets.forEach(b=>{
+      ctx.fillStyle='#f84';
+      ctx.shadowColor='#f84'; ctx.shadowBlur=5;
+      ctx.fillRect(b.x-1.5, b.y-5, 3, 10);
+      ctx.shadowBlur=0;
     });
 
-    GAME.bullets.forEach(b => {
-      const color = PCOLORS[b.owner-1] || '#fff';
-      ctx.fillStyle = color;
-      ctx.shadowColor = PGLOW[b.owner-1] || '#fff';
-      ctx.shadowBlur = 8;
-      ctx.fillRect(b.x-2, b.y-8, 3, 12);
-      ctx.shadowBlur = 0;
+    // Player bullets
+    GAME.bullets.forEach(b=>{
+      const col = PCOLORS[b.owner-1]||'#fff';
+      ctx.fillStyle=col;
+      ctx.shadowColor=PGLOW[b.owner-1]||'#fff'; ctx.shadowBlur=8;
+      ctx.fillRect(b.x-2, b.y-8, 4, 14);
+      ctx.shadowBlur=0;
     });
 
-    Object.values(GAME.remotePlayers).forEach(p => {
-      if(GAME.lives[p.num-1] <= 0) return;
+    // Remote ships
+    Object.values(GAME.remotePlayers).forEach(p=>{
+      if(GAME.lives[p.num-1]<=0) return;
       GAME.drawShip(ctx, p.x, p.y, p.num);
     });
 
-    if(GAME.lives[NET.myNum-1] > 0) {
+    // My ship
+    if(GAME.lives[NET.myNum-1]>0) {
       GAME.drawShip(ctx, GAME.myShip.x, GAME.myShip.y, NET.myNum);
+    } else {
+      // Draw explosion placeholder
+      ctx.fillStyle='#f840';
+      ctx.font='20px monospace';
+      ctx.textAlign='center';
     }
   },
 
   drawShip(ctx, x, y, num) {
-    const color = PCOLORS[num-1];
-    const glow  = PGLOW[num-1];
+    const color=PCOLORS[num-1], glow=PGLOW[num-1];
     ctx.save();
     ctx.translate(x, y);
-    ctx.fillStyle = color;
-    ctx.shadowColor = glow;
-    ctx.shadowBlur = 12;
+    ctx.shadowColor=glow; ctx.shadowBlur=14;
+    ctx.fillStyle=color;
+    // Body
     ctx.beginPath();
-    ctx.moveTo(0, -14); ctx.lineTo(10, 6); ctx.lineTo(5, 3);
-    ctx.lineTo(0, 6);   ctx.lineTo(-5, 3); ctx.lineTo(-10, 6);
+    ctx.moveTo(0,-16);
+    ctx.lineTo(12,8); ctx.lineTo(7,5);
+    ctx.lineTo(0,8);  ctx.lineTo(-7,5);
+    ctx.lineTo(-12,8);
     ctx.closePath();
     ctx.fill();
-    ctx.fillStyle = '#fff8';
-    ctx.beginPath(); ctx.ellipse(0, -4, 3, 4, 0, 0, Math.PI*2); ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = color;
-    ctx.font = '8px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('J' + num, 0, 20);
+    // Engine glow
+    ctx.fillStyle='#fff4';
+    ctx.fillRect(-4,6,3,5);
+    ctx.fillRect(1,6,3,5);
+    // Cockpit
+    ctx.fillStyle='#fffa';
+    ctx.beginPath(); ctx.ellipse(0,-5,3,5,0,0,Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0;
+    // Label
+    ctx.fillStyle=color+'cc';
+    ctx.font='bold 8px Courier New';
+    ctx.textAlign='center';
+    ctx.fillText('J'+num, 0, 22);
     ctx.restore();
   },
 
   drawInvader(ctx, x, y, type, frame) {
     ctx.save();
-    ctx.translate(x, y);
-    const colors = ['#88f','#4f4','#f44'];
-    ctx.fillStyle = colors[type];
-    ctx.shadowColor = colors[type];
-    ctx.shadowBlur = 4;
+    ctx.translate(x,y);
+    const colors=['#88f','#4d4','#f44'];
+    ctx.fillStyle=colors[type]; ctx.shadowColor=colors[type]; ctx.shadowBlur=5;
 
-    if(type === 0) {
-      ctx.fillRect(-8,-5,4,10); ctx.fillRect(-4,-7,8,3); ctx.fillRect(-4,4,8,3);
-      ctx.fillRect(4,-5,4,10);
-      if(frame){ ctx.fillRect(-10,-3,2,6); ctx.fillRect(8,-3,2,6); }
-      else { ctx.fillRect(-12,-5,2,4); ctx.fillRect(10,-5,2,4); }
-    } else if(type === 1) {
-      ctx.fillRect(-7,-6,14,8); ctx.fillRect(-4,-8,8,2);
-      ctx.fillRect(-9,-2,2,6); ctx.fillRect(7,-2,2,6);
-      if(frame){ ctx.fillRect(-5,2,4,4); ctx.fillRect(1,2,4,4); }
-      else { ctx.fillRect(-4,2,3,5); ctx.fillRect(1,2,3,5); }
-    } else {
+    if(type===0) { // crab
+      ctx.fillRect(-8,-5,4,10); ctx.fillRect(-4,-7,8,3); ctx.fillRect(-4,4,8,3); ctx.fillRect(4,-5,4,10);
+      if(frame){ctx.fillRect(-10,-3,2,6);ctx.fillRect(8,-3,2,6);}
+      else{ctx.fillRect(-12,-5,2,4);ctx.fillRect(10,-5,2,4);}
+      // eyes
+      ctx.fillStyle='#fff'; ctx.fillRect(-5,-2,2,2); ctx.fillRect(3,-2,2,2);
+    } else if(type===1) { // squid
+      ctx.fillRect(-7,-6,14,8); ctx.fillRect(-4,-8,8,2); ctx.fillRect(-9,-2,2,6); ctx.fillRect(7,-2,2,6);
+      if(frame){ctx.fillRect(-5,2,4,4);ctx.fillRect(1,2,4,4);}
+      else{ctx.fillRect(-4,2,3,5);ctx.fillRect(1,2,3,5);}
+      ctx.fillStyle='#fff'; ctx.fillRect(-4,-4,2,2); ctx.fillRect(2,-4,2,2);
+    } else { // ufo
       ctx.beginPath(); ctx.ellipse(0,-2,10,5,0,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(0,-4,5,3,0,0,Math.PI*2); ctx.fill();
-      if(frame){ ctx.fillRect(-8,2,4,3); ctx.fillRect(4,2,4,3); }
-      else { ctx.fillRect(-6,2,3,4); ctx.fillRect(3,2,3,4); }
+      ctx.fillStyle=colors[type]+'aa';
+      ctx.beginPath(); ctx.ellipse(0,-5,5,3,0,0,Math.PI*2); ctx.fill();
+      if(frame){ctx.fillStyle='#ff0';ctx.fillRect(-7,1,3,3);ctx.fillRect(-1,1,3,3);ctx.fillRect(5,1,3,3);}
+      else{ctx.fillStyle='#f00';ctx.fillRect(-7,1,3,3);ctx.fillRect(-1,1,3,3);ctx.fillRect(5,1,3,3);}
     }
-    ctx.shadowBlur = 0;
+    ctx.shadowBlur=0;
     ctx.restore();
   },
 
   updateHUD() {
-    let scHTML = '';
-    const colors = ['#0ff','#f0f','#ff0'];
-    GAME.scores.forEach((s, i) => {
-      scHTML += `<span style="color:${colors[i]};margin-right:8px">J${i+1}:<b>${s}</b></span>`;
-    });
-    document.getElementById('hud-scores').innerHTML = scHTML;
-    document.getElementById('hud-wave').textContent = `OLEADA ${GAME.wave}`;
+    // Scores: only show active players
+    let scHTML='';
+    for(let i=0;i<GAME.numActivePlayers;i++) {
+      scHTML+=`<span style="color:${PCOLORS[i]};margin-right:6px">J${i+1}:<b>${GAME.scores[i]}</b></span>`;
+    }
+    document.getElementById('hud-scores').innerHTML=scHTML;
+    document.getElementById('hud-wave').textContent=`OL.${GAME.wave}`;
+
+    // Lives for my player
     const myLives = GAME.lives[NET.myNum-1];
-    let livesHTML = '';
-    for(let i=0;i<3;i++) livesHTML += `<span style="color:${PCOLORS[NET.myNum-1]};opacity:${i<myLives?1:.2};font-size:.9rem">▲</span>`;
-    document.getElementById('hud-lives').innerHTML = livesHTML;
+    let lHTML='';
+    for(let i=0;i<3;i++)
+      lHTML+=`<span style="color:${PCOLORS[NET.myNum-1]};opacity:${i<myLives?1:.15};font-size:.85rem">▲</span>`;
+    document.getElementById('hud-lives').innerHTML=lHTML;
   },
 
+  // ── CONTROLS ────────────────────────────────────────
   setupControls() {
-    function press(key, val) { GAME.keys[key] = val; }
-
+    const press = (k,v) => GAME.keys[k]=v;
     const btnL = document.getElementById('btn-left');
     const btnR = document.getElementById('btn-right');
     const btnF = document.getElementById('btn-fire');
 
-    ['touchstart','mousedown'].forEach(ev => {
-      btnL.addEventListener(ev, e=>{e.preventDefault(); press('left',true); btnL.classList.add('pressed');}, {passive:false});
-      btnR.addEventListener(ev, e=>{e.preventDefault(); press('right',true); btnR.classList.add('pressed');}, {passive:false});
-      btnF.addEventListener(ev, e=>{e.preventDefault(); press('fire',true); btnF.classList.add('pressed');}, {passive:false});
+    // Touch controls — use pointer events for reliability
+    function addPointer(el, key) {
+      el.addEventListener('pointerdown', e=>{
+        e.preventDefault();
+        press(key,true);
+        el.classList.add('pressed');
+        el.setPointerCapture(e.pointerId);
+      }, {passive:false});
+      el.addEventListener('pointerup',   e=>{ e.preventDefault(); press(key,false); el.classList.remove('pressed'); }, {passive:false});
+      el.addEventListener('pointercancel',e=>{ press(key,false); el.classList.remove('pressed'); });
+    }
+    addPointer(btnL,'left');
+    addPointer(btnR,'right');
+    addPointer(btnF,'fire');
+
+    // Keyboard
+    const keyMap = {
+      'ArrowLeft':'left','a':'left','A':'left',
+      'ArrowRight':'right','d':'right','D':'right',
+      ' ':'fire'
+    };
+    addEventListener('keydown', e=>{
+      if(keyMap[e.key]!==undefined){ e.preventDefault(); press(keyMap[e.key],true); }
     });
-    ['touchend','touchcancel','mouseup'].forEach(ev => {
-      btnL.addEventListener(ev, e=>{e.preventDefault(); press('left',false); btnL.classList.remove('pressed');}, {passive:false});
-      btnR.addEventListener(ev, e=>{e.preventDefault(); press('right',false); btnR.classList.remove('pressed');}, {passive:false});
-      btnF.addEventListener(ev, e=>{e.preventDefault(); press('fire',false); btnF.classList.remove('pressed');}, {passive:false});
+    addEventListener('keyup', e=>{
+      if(keyMap[e.key]!==undefined) press(keyMap[e.key],false);
     });
 
-    window.addEventListener('keydown', e => {
-      if(e.key==='ArrowLeft'||e.key==='a') press('left',true);
-      if(e.key==='ArrowRight'||e.key==='d') press('right',true);
-      if(e.key===' ') press('fire',true);
-    });
-    window.addEventListener('keyup', e => {
-      if(e.key==='ArrowLeft'||e.key==='a') press('left',false);
-      if(e.key==='ArrowRight'||e.key==='d') press('right',false);
-      if(e.key===' ') press('fire',false);
-    });
+    // Swipe on canvas (alternative mobile control)
+    let touchStartX = null;
+    GAME.canvas.addEventListener('touchstart', e=>{
+      touchStartX = e.touches[0].clientX;
+    }, {passive:true});
+    GAME.canvas.addEventListener('touchmove', e=>{
+      if(touchStartX===null) return;
+      const dx = e.touches[0].clientX - touchStartX;
+      press('left', dx < -10);
+      press('right', dx > 10);
+    }, {passive:true});
+    GAME.canvas.addEventListener('touchend', e=>{
+      press('left',false); press('right',false);
+      // Tap on canvas = fire
+      if(Math.abs(e.changedTouches[0].clientX - (touchStartX||0)) < 15)
+        press('fire',true);
+      touchStartX=null;
+      setTimeout(()=>press('fire',false),120);
+    }, {passive:true});
   }
 };
 
-// ── LOBBY ──
+// ── LOBBY LOGIC ─────────────────────────────────────────
 let MY_NAME = 'Piloto';
 
-document.getElementById('btn-connect').addEventListener('click', async () => {
+// Solo play
+document.getElementById('btn-solo').addEventListener('click', ()=>{
+  MY_NAME = document.getElementById('input-name').value.trim() || 'Piloto';
+  NET.myNum  = 1;
+  NET.isHost = true;
+  NET.numPlayers = 1;
+  GAME.startAsHost();
+});
+
+// Network play
+document.getElementById('btn-connect').addEventListener('click', async ()=>{
   const serverAddr = document.getElementById('input-server').value.trim();
   MY_NAME = document.getElementById('input-name').value.trim() || 'Piloto';
-
-  if(!serverAddr) {
-    UI.setError('Introduce la dirección del servidor');
-    return;
-  }
+  if(!serverAddr){ UI.setError('Introduce la dirección del servidor'); return; }
 
   const btn = document.getElementById('btn-connect');
   btn.disabled = true;
   btn.textContent = 'CONECTANDO...';
 
+  // Show status panels
+  document.getElementById('status-box').style.display='block';
+  document.getElementById('players-list').style.display='flex';
+  UI.updateSlot(1,'Esperando...',false);
+  UI.updateSlot(2,'Esperando...',false);
+  UI.updateSlot(3,'Esperando...',false);
+
   try {
     await NET.connect(serverAddr, MY_NAME);
-    btn.textContent = 'ESPERANDO JUGADORES...';
+    btn.textContent = 'ESPERANDO... (máx 8s)';
   } catch(e) {
-    btn.disabled = false;
-    btn.textContent = 'CONECTAR';
+    btn.disabled=false;
+    btn.textContent='CONECTAR Y ESPERAR';
     UI.setError(e.message);
+    document.getElementById('status-box').style.display='none';
+    document.getElementById('players-list').style.display='none';
   }
 });
 
-document.getElementById('btn-restart').addEventListener('click', () => {
-  location.reload();
-});
+document.getElementById('btn-restart').addEventListener('click', ()=>location.reload());
 
+// Init
 GAME.init();
 </script>
 </body>
