@@ -1,28 +1,29 @@
 /**
- * SPACE RAIDERS - Servidor de Señalización WebRTC
+ * SPACE RAIDERS — Servidor de Señalización WebRTC
  * ================================================
- * Listo para Railway, Render, Fly.io (gratuitos)
- * 
+ * Compatible con Railway, Render, Fly.io
+ *
  * Deploy en Railway:
- *   1. Sube esta carpeta a GitHub
- *   2. Ve a railway.app → New Project → Deploy from GitHub
- *   3. Selecciona el repo → Railway detecta Node automáticamente
- *   4. En Settings → Variables: PORT lo pone Railway solo
- *   5. Copia la URL pública (ej: space-raiders.up.railway.app)
- *   6. En el juego usa esa URL (sin http://, solo el dominio)
+ *   1. Sube esta carpeta (server.js + game.html + package.json) a GitHub
+ *   2. railway.app → New Project → Deploy from GitHub
+ *   3. Railway detecta Node automáticamente
+ *   4. Copia la URL pública (ej: space-raiders.up.railway.app)
+ *   5. Úsala en el campo "Servidor" del juego
+ *
+ * LOCAL (misma WiFi):
+ *   npm install && node server.js
+ *   → Abre http://<tu-IP>:3000 en cada móvil
  */
 
 const WebSocket = require('ws');
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const http      = require('http');
+const fs        = require('fs');
+const path      = require('path');
 
-// Railway/Render ponen el puerto en process.env.PORT
 const PORT = process.env.PORT || 3000;
 
-// ── HTTP: sirve el game.html ──────────────────────────
+// ── HTTP: sirve game.html ───────────────────────────────
 const httpServer = http.createServer((req, res) => {
-  // CORS headers (necesario si el cliente está en otro dominio)
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   if (req.url === '/' || req.url === '/game.html' || req.url === '/index.html') {
@@ -30,106 +31,105 @@ const httpServer = http.createServer((req, res) => {
     fs.readFile(filePath, (err, data) => {
       if (err) {
         res.writeHead(200, { 'Content-Type': 'text/html' });
-        res.end(`
-          <html><body style="background:#000;color:#0ff;font-family:monospace;padding:40px">
-          <h1>🚀 SPACE RAIDERS SERVER</h1>
-          <p>Servidor online. game.html no encontrado en esta carpeta.</p>
-          <p>Sube game.html junto a server.js y redeploya.</p>
-          </body></html>
-        `);
+        res.end(`<html><body style="background:#000;color:#0ff;font-family:monospace;padding:40px">
+          <h1>🚀 SPACE RAIDERS SERVER ONLINE</h1>
+          <p>game.html no encontrado. Sube game.html junto a server.js.</p>
+          </body></html>`);
         return;
       }
       res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
       res.end(data);
     });
   } else if (req.url === '/health') {
-    // Health check para Railway/Render
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ status: 'ok', players: players.length }));
+    res.end(JSON.stringify({ status: 'ok', players: players.length, gameStarted }));
   } else {
-    res.writeHead(404);
-    res.end('Not found');
+    res.writeHead(404); res.end('Not found');
   }
 });
 
-// ── WebSocket ─────────────────────────────────────────
-// En Railway/Render el SSL lo termina el proxy → aquí usamos ws:// normal
+// ── WebSocket ──────────────────────────────────────────
 const wss = new WebSocket.Server({ server: httpServer });
 
 const MAX_PLAYERS = 3;
-let players = [];
-let nextId = 0;
-// Permite múltiples salas en el futuro (por ahora una sola)
+let players     = [];   // { ws, id, playerNum, name }
+let nextId      = 0;
 let gameStarted = false;
 
 function broadcast(data, excludeId = null) {
   const msg = JSON.stringify(data);
   players.forEach(p => {
-    if (p.id !== excludeId && p.ws.readyState === WebSocket.OPEN) {
+    if (p.id !== excludeId && p.ws.readyState === WebSocket.OPEN)
       p.ws.send(msg);
-    }
   });
 }
 
 function sendTo(id, data) {
-  const player = players.find(p => p.id === id);
-  if (player && player.ws.readyState === WebSocket.OPEN) {
-    player.ws.send(JSON.stringify(data));
-  }
+  const p = players.find(p => p.id === id);
+  if (p && p.ws.readyState === WebSocket.OPEN)
+    p.ws.send(JSON.stringify(data));
 }
 
 wss.on('connection', (ws, req) => {
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
-  // Sala llena
   if (players.length >= MAX_PLAYERS) {
-    ws.send(JSON.stringify({ type: 'error', message: 'Sala llena (máx 3 jugadores). Espera a que termine la partida.' }));
-    ws.close();
-    return;
+    ws.send(JSON.stringify({ type:'error', message:'Sala llena (máx 3 jugadores).' }));
+    ws.close(); return;
   }
 
-  const id = nextId++;
+  const id        = nextId++;
   const playerNum = players.length + 1;
-  players.push({ ws, id, name: `Jugador ${playerNum}`, playerNum });
+  players.push({ ws, id, playerNum, name: `Jugador ${playerNum}` });
+  console.log(`[+] J${playerNum} (id:${id}) desde ${ip}. Total: ${players.length}/${MAX_PLAYERS}`);
 
-  console.log(`[+] J${playerNum} (id:${id}) desde ${clientIp}. Total: ${players.length}/${MAX_PLAYERS}`);
-
+  // Bienvenida
   ws.send(JSON.stringify({
-    type: 'welcome',
-    id,
-    playerNum,
-    totalPlayers: players.length,
-    maxPlayers: MAX_PLAYERS
+    type: 'welcome', id, playerNum,
+    totalPlayers: players.length, maxPlayers: MAX_PLAYERS,
+    isHost: (playerNum === 1)
   }));
 
-  broadcast({ type: 'player_joined', id, playerNum, totalPlayers: players.length }, id);
+  // Notificar a los demás
+  broadcast({ type:'player_joined', id, playerNum, totalPlayers: players.length }, id);
 
+  // Si llegan los 3, iniciar señalización P2P inmediatamente
   if (players.length === MAX_PLAYERS) {
-    console.log('[*] ¡3 jugadores! Iniciando señalización P2P...');
-    gameStarted = true;
-    const allPlayers = players.map((p, i) => ({ id: p.id, playerNum: i + 1 }));
-    broadcast({ type: 'start_signaling', players: allPlayers });
+    console.log('[*] Sala completa → señalización P2P');
+    const all = players.map((p, i) => ({ id: p.id, playerNum: i+1 }));
+    broadcast({ type:'start_signaling', players: all });
   }
 
-  ws.on('message', (raw) => {
-    let msg;
-    try { msg = JSON.parse(raw); } catch { return; }
+  ws.on('message', raw => {
+    let msg; try { msg = JSON.parse(raw); } catch { return; }
 
     switch (msg.type) {
+      // ── Señalización WebRTC ──
       case 'offer':
       case 'answer':
       case 'ice_candidate':
-        if (msg.to !== undefined) {
-          sendTo(msg.to, { ...msg, from: id });
-        }
+        if (msg.to !== undefined) sendTo(msg.to, { ...msg, from: id });
         break;
 
-      case 'set_name':
-        const player = players.find(p => p.id === id);
-        if (player) {
-          player.name = msg.name.substring(0, 20); // sanitize
-          console.log(`[~] J${player.playerNum} se llama: ${player.name}`);
+      // ── Nombre ──
+      case 'set_name': {
+        const p = players.find(p => p.id === id);
+        if (p) {
+          p.name = String(msg.name).substring(0, 20);
+          console.log(`[~] J${p.playerNum} = "${p.name}"`);
+          // Broadcast nombre a todos para actualizar slots
+          broadcast({ type:'player_name', playerNum: p.playerNum, name: p.name });
         }
+        break;
+      }
+
+      // ── Host arranca la partida (retransmitir a todos) ──
+      // Este mensaje no necesita relay especial: el host lo manda
+      // directamente por P2P una vez establecidos los canales.
+      // El server solo lo necesita si algún cliente aún no tiene canal.
+      case 'host_start':
+        gameStarted = true;
+        broadcast({ type:'host_start' }, id);
         break;
     }
   });
@@ -137,21 +137,25 @@ wss.on('connection', (ws, req) => {
   ws.on('close', () => {
     players = players.filter(p => p.id !== id);
     gameStarted = false;
-    console.log(`[-] J${id} desconectado. Total: ${players.length}/${MAX_PLAYERS}`);
-    broadcast({ type: 'player_left', id, totalPlayers: players.length });
+    console.log(`[-] id:${id} desconectado. Total: ${players.length}/${MAX_PLAYERS}`);
+    broadcast({ type:'player_left', id, totalPlayers: players.length });
   });
 
-  ws.on('error', (err) => {
-    console.error(`[!] Error J${id}:`, err.message);
-  });
+  ws.on('error', err => console.error(`[!] id:${id}:`, err.message));
 });
 
 httpServer.listen(PORT, '0.0.0.0', () => {
+  const { networkInterfaces } = require('os');
+  const nets = networkInterfaces();
+  const ips  = [];
+  for (const ifaces of Object.values(nets))
+    for (const n of ifaces)
+      if (n.family === 'IPv4' && !n.internal) ips.push(n.address);
+
   console.log('\n╔══════════════════════════════════════════╗');
-  console.log('║     SPACE RAIDERS - Servidor Online      ║');
+  console.log('║     SPACE RAIDERS — Servidor listo       ║');
   console.log('╠══════════════════════════════════════════╣');
-  console.log(`║  Puerto local: ${String(PORT).padEnd(26)}║`);
-  console.log('║  En Railway: usa la URL pública          ║');
-  console.log('║  /health → estado del servidor           ║');
+  ips.forEach(ip => console.log(`║  → http://${ip}:${PORT}`.padEnd(44) + '║'));
+  console.log('║  /health → estado JSON                   ║');
   console.log('╚══════════════════════════════════════════╝\n');
 });
