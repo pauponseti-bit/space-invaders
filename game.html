@@ -5,313 +5,167 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
 <title>SPACE RAIDERS</title>
 <style>
-  :root {
-    --c0: #000008;
-    --c1: #0ff;
-    --c2: #f0f;
-    --c3: #ff0;
-    --c4: #0f8;
-    --glow1: 0 0 8px #0ff, 0 0 20px #0ff4;
-    --glow2: 0 0 8px #f0f, 0 0 20px #f0f4;
-    --glow3: 0 0 8px #ff0, 0 0 20px #ff04;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body {
-    background: var(--c0);
-    color: #fff;
-    font-family: 'Courier New', monospace;
-    overflow: hidden;
-    height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+:root {
+  --c0:#000008; --c1:#0ff; --c2:#f0f; --c3:#ff0; --c4:#0f8;
+  --glow1:0 0 8px #0ff,0 0 20px #0ff4;
+  --glow2:0 0 8px #f0f,0 0 20px #f0f4;
+  --glow3:0 0 8px #ff0,0 0 20px #ff04;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--c0);color:#fff;font-family:'Courier New',monospace;overflow:hidden;height:100dvh;display:flex;flex-direction:column;align-items:center}
 
-  .screen { display:none; width:100%; height:100dvh; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
-  .screen.active { display:flex; }
+/* ── SCREENS ── */
+.screen{display:none;width:100%;height:100dvh;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.screen.active{display:flex}
 
-  /* LOBBY */
-  #screen-lobby {
-    background: radial-gradient(ellipse at 50% 30%, #001a2e 0%, #000008 70%);
-    gap: 18px;
-    overflow-y: auto;
-  }
-  .logo {
-    font-size: clamp(2rem, 10vw, 3.5rem);
-    font-weight: 900;
-    letter-spacing: 0.15em;
-    color: var(--c1);
-    text-shadow: var(--glow1);
-    animation: pulse 2s ease-in-out infinite;
-    text-align: center;
-  }
-  .logo span { color: var(--c2); text-shadow: var(--glow2); }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.75} }
+/* LOBBY */
+#screen-lobby{background:radial-gradient(ellipse at 50% 30%,#001a2e 0%,#000008 70%);gap:14px;overflow-y:auto;padding:16px 20px}
+.logo{font-size:clamp(1.8rem,9vw,3rem);font-weight:900;letter-spacing:.15em;color:var(--c1);text-shadow:var(--glow1);animation:pulse 2s ease-in-out infinite;text-align:center}
+.logo span{color:var(--c2);text-shadow:var(--glow2)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.75}}
+.subtitle{font-size:clamp(.55rem,2.5vw,.8rem);letter-spacing:.3em;color:#666;text-align:center;text-transform:uppercase}
+.input-group{display:flex;flex-direction:column;gap:5px;width:100%;max-width:320px}
+.input-group label{font-size:.65rem;letter-spacing:.2em;color:var(--c1);text-transform:uppercase}
+.input-group .hint{font-size:.58rem;color:#444}
+input[type=text]{background:#0a0a1a;border:1px solid var(--c1);border-radius:4px;color:#fff;font-family:inherit;font-size:.95rem;padding:9px 14px;outline:none;width:100%;box-shadow:inset 0 0 10px #0ff1;transition:border-color .2s,box-shadow .2s}
+input[type=text]:focus{border-color:var(--c2);box-shadow:inset 0 0 10px #f0f1,0 0 0 2px #f0f3}
+.btn{background:transparent;border:2px solid var(--c1);border-radius:4px;color:var(--c1);cursor:pointer;font-family:inherit;font-size:.85rem;font-weight:700;letter-spacing:.2em;padding:12px 24px;text-transform:uppercase;transition:all .15s;width:100%;max-width:320px;text-shadow:var(--glow1);box-shadow:0 0 10px #0ff2}
+.btn:active{background:#0ff2;transform:scale(.97)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn.green{border-color:var(--c4);color:var(--c4);text-shadow:0 0 8px #0f8;box-shadow:0 0 10px #0f82}
+.btn.green:active{background:#0f82}
+.status-box{background:#0a0a1a;border:1px solid #1a1a3a;border-radius:6px;padding:10px 14px;width:100%;max-width:320px;font-size:.72rem;line-height:1.9}
+.status-box .row{display:flex;justify-content:space-between}
+.status-box .val{color:var(--c4)}
+.status-box .val.warn{color:var(--c3)}
+.status-box .val.ok{color:var(--c4)}
+.status-box .val.err{color:var(--c2)}
+.players-list{display:flex;flex-direction:column;gap:5px;width:100%;max-width:320px}
+.player-slot{background:#0a0a1a;border:1px solid #1a1a3a;border-radius:4px;padding:7px 12px;font-size:.72rem;display:flex;align-items:center;gap:9px}
+.player-slot .dot{width:8px;height:8px;border-radius:50%;background:#222;flex-shrink:0}
+.player-slot.p1 .dot{background:var(--c1);box-shadow:var(--glow1)}
+.player-slot.p2 .dot{background:var(--c2);box-shadow:var(--glow2)}
+.player-slot.p3 .dot{background:var(--c3);box-shadow:var(--glow3)}
+.player-slot .name{flex:1}
+.player-slot .tag{color:#555;font-size:.62rem;letter-spacing:.1em}
+.player-slot.filled .name{color:#fff}
+.player-slot.filled .tag{color:var(--c4)}
 
-  .subtitle {
-    font-size: clamp(0.6rem, 3vw, 0.85rem);
-    letter-spacing: 0.3em;
-    color: #666;
-    text-align: center;
-    text-transform: uppercase;
-  }
 
-  .input-group { display:flex; flex-direction:column; gap:6px; width:100%; max-width:320px; }
-  .input-group label { font-size:0.7rem; letter-spacing:0.2em; color:var(--c1); text-transform:uppercase; }
-  .input-group .hint { font-size:0.6rem; color:#444; letter-spacing:.05em; text-transform:none; margin-top:-2px; }
-  input[type="text"] {
-    background: #0a0a1a;
-    border: 1px solid var(--c1);
-    border-radius: 4px;
-    color: #fff;
-    font-family: inherit;
-    font-size: 1rem;
-    padding: 10px 14px;
-    outline: none;
-    width: 100%;
-    box-shadow: inset 0 0 10px #0ff1;
-    transition: border-color .2s, box-shadow .2s;
-  }
-  input[type="text"]:focus { border-color: var(--c2); box-shadow: inset 0 0 10px #f0f1, 0 0 0 2px #f0f3; }
+/* GAME */
+#screen-game{padding:0;justify-content:flex-start;position:relative}
+#hud{width:100%;display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:#00000a;border-bottom:1px solid #0ff2;flex-shrink:0;z-index:10;min-height:34px}
+.hud-score{font-size:.62rem;letter-spacing:.04em}
+.hud-lives{display:flex;gap:2px;align-items:center}
+.hud-wave{font-size:.62rem;color:#888;letter-spacing:.1em}
 
-  .btn {
-    background: transparent;
-    border: 2px solid var(--c1);
-    border-radius: 4px;
-    color: var(--c1);
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.9rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    padding: 13px 24px;
-    text-transform: uppercase;
-    transition: all .15s;
-    width: 100%;
-    max-width: 320px;
-    text-shadow: var(--glow1);
-    box-shadow: 0 0 10px #0ff2;
-  }
-  .btn:active { background: #0ff2; transform: scale(.97); }
-  .btn:disabled { opacity: .3; cursor: not-allowed; }
-  .btn.solo { border-color: var(--c4); color: var(--c4); text-shadow: 0 0 8px #0f8; box-shadow: 0 0 10px #0f82; }
-  .btn.solo:active { background: #0f82; }
+/* Buff icons HUD */
+#hud-buffs{display:flex;gap:4px;align-items:center}
+.buff-icon{font-size:.75rem;padding:1px 4px;border-radius:3px;background:#0002;border:1px solid #333}
 
-  .divider {
-    display: flex; align-items: center; gap: 10px;
-    width: 100%; max-width: 320px; color: #333; font-size: 0.7rem; letter-spacing: .2em;
-  }
-  .divider::before, .divider::after { content:''; flex:1; height:1px; background:#1a1a3a; }
+/* Wave banner */
+#wave-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(1.2rem,6vw,2rem);font-weight:900;color:var(--c3);text-shadow:var(--glow3);letter-spacing:.2em;text-align:center;pointer-events:none;z-index:20;opacity:0;transition:opacity .3s;white-space:nowrap}
+#wave-banner.show{opacity:1}
 
-  .status-box {
-    background: #0a0a1a;
-    border: 1px solid #1a1a3a;
-    border-radius: 6px;
-    padding: 12px 16px;
-    width: 100%;
-    max-width: 320px;
-    font-size: 0.75rem;
-    line-height: 1.8;
-  }
-  .status-box .row { display:flex; justify-content:space-between; }
-  .status-box .val { color: var(--c4); }
-  .status-box .val.warn { color: var(--c3); }
-  .status-box .val.ok { color: var(--c4); }
-  .status-box .val.err { color: var(--c2); }
+#canvas{display:block;width:100%;flex:1;touch-action:none}
 
-  .players-list { display:flex; flex-direction:column; gap:5px; width:100%; max-width:320px; }
-  .player-slot {
-    background: #0a0a1a;
-    border: 1px solid #1a1a3a;
-    border-radius: 4px;
-    padding: 8px 14px;
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .player-slot .dot { width:8px; height:8px; border-radius:50%; background:#222; flex-shrink:0; }
-  .player-slot.p1 .dot { background:var(--c1); box-shadow:var(--glow1); }
-  .player-slot.p2 .dot { background:var(--c2); box-shadow:var(--glow2); }
-  .player-slot.p3 .dot { background:var(--c3); box-shadow:var(--glow3); }
-  .player-slot .name { flex:1; }
-  .player-slot .tag { color:#555; font-size:0.65rem; letter-spacing:.1em; }
-  .player-slot.filled .name { color:#fff; }
-  .player-slot.filled .tag { color:var(--c4); }
+/* CONTROLS — 4 direcciones + fuego */
+#controls{width:100%;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:6px 12px;background:#00000a;border-top:1px solid #0ff2;flex-shrink:0;height:82px;gap:6px}
+.ctrl-dpad{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:4px;width:130px}
+.ctrl-btn{background:#0a0a18;border:2px solid #222244;border-radius:7px;color:#999;font-size:1.1rem;width:40px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;flex-shrink:0;touch-action:none}
+.ctrl-btn.pressed,.ctrl-btn:active{background:#0ff3;border-color:var(--c1);color:var(--c1)}
+#btn-up{grid-column:2;grid-row:1}
+#btn-left{grid-column:1;grid-row:2}
+#btn-down{grid-column:2;grid-row:2}
+#btn-right{grid-column:3;grid-row:2}
+#btn-fire{width:68px;height:68px;border-radius:50%;font-size:1.5rem;border-color:#440044;color:var(--c2);justify-self:center}
+#btn-fire.pressed,#btn-fire:active{background:#f0f3;border-color:var(--c2)}
+.ctrl-right-pad{width:130px} /* spacer */
 
-  /* GAME */
-  #screen-game { padding:0; justify-content:flex-start; position:relative; }
-  #hud {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 10px;
-    background: #00000a;
-    border-bottom: 1px solid #0ff2;
-    flex-shrink: 0;
-    z-index: 10;
-    min-height: 36px;
-  }
-  .hud-score { font-size: 0.65rem; letter-spacing:.05em; }
-  .hud-lives { display:flex; gap:3px; align-items:center; }
-  .hud-wave { font-size: 0.65rem; color: #888; letter-spacing:.1em; }
+/* OVERLAY */
+#overlay{display:none;position:fixed;inset:0;background:#000c;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:100;padding:28px}
+#overlay.active{display:flex}
+#overlay h2{font-size:clamp(1.4rem,7vw,2.3rem);text-align:center;letter-spacing:.1em}
+#overlay .big-score{font-size:clamp(1.8rem,10vw,3.5rem);font-weight:900;color:var(--c1);text-shadow:var(--glow1)}
+#overlay p{text-align:center;font-size:.82rem;color:#888;line-height:1.7;white-space:pre-line}
 
-  /* Wave banner */
-  #wave-banner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: clamp(1.2rem, 6vw, 2rem);
-    font-weight: 900;
-    color: var(--c3);
-    text-shadow: var(--glow3);
-    letter-spacing: .2em;
-    text-align: center;
-    pointer-events: none;
-    z-index: 20;
-    opacity: 0;
-    transition: opacity .3s;
-  }
-  #wave-banner.show { opacity: 1; }
-
-  #canvas { display:block; width:100%; flex:1; touch-action:none; }
-
-  /* CONTROLS */
-  #controls {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 6px 14px;
-    background: #00000a;
-    border-top: 1px solid #0ff2;
-    flex-shrink: 0;
-    height: 76px;
-    position: relative;
-  }
-  .ctrl-btn {
-    background: #0a0a18;
-    border: 2px solid #222244;
-    border-radius: 8px;
-    color: #aaa;
-    font-size: 1.3rem;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
-    -webkit-user-select: none;
-    flex-shrink: 0;
-    touch-action: none;
-  }
-  .ctrl-btn.pressed, .ctrl-btn:active {
-    background: #0ff3;
-    border-color: var(--c1);
-    color: var(--c1);
-  }
-  .ctrl-dpad { display:flex; gap:8px; }
-
-  #btn-fire {
-    width: 68px;
-    height: 68px;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    border-color: #440044;
-    color: var(--c2);
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  #btn-fire.pressed, #btn-fire:active {
-    background: #f0f3;
-    border-color: var(--c2);
-  }
-
-  /* OVERLAY */
-  #overlay {
-    display: none;
-    position: fixed; inset:0;
-    background: #000c;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 16px;
-    z-index: 100;
-    padding: 30px;
-  }
-  #overlay.active { display:flex; }
-  #overlay h2 { font-size: clamp(1.5rem, 8vw, 2.5rem); text-align:center; letter-spacing:.1em; }
-  #overlay .big-score { font-size: clamp(2rem, 12vw, 4rem); font-weight:900; color:var(--c1); text-shadow:var(--glow1); }
-  #overlay p { text-align:center; font-size:0.85rem; color:#888; line-height:1.7; white-space:pre-line; }
-
-  #starfield { position:fixed; inset:0; pointer-events:none; z-index:0; }
-  .screen { position:relative; z-index:1; }
+#starfield{position:fixed;inset:0;pointer-events:none;z-index:0}
+.screen{position:relative;z-index:1}
 </style>
 </head>
 <body>
-
 <canvas id="starfield"></canvas>
 
-<!-- LOBBY -->
+<!-- ═══ LOBBY ═══ -->
 <div id="screen-lobby" class="screen active">
   <div class="logo">SPACE<br><span>RAIDERS</span></div>
-  <div class="subtitle">1-3 Jugadores · Online / Local</div>
+  <div class="subtitle">Hasta 3 Jugadores · Online P2P</div>
 
   <div class="input-group">
     <label>Tu nombre</label>
     <input type="text" id="input-name" placeholder="Piloto" maxlength="12" autocomplete="off">
   </div>
 
-  <button class="btn solo" id="btn-solo">▶ JUGAR SOLO</button>
+  <button class="btn green" id="btn-solo">▶ JUGAR SOLO</button>
 
-  <div class="divider">O CON AMIGOS</div>
+  <div style="display:flex;align-items:center;gap:10px;width:100%;max-width:320px;color:#333;font-size:.65rem;letter-spacing:.2em">
+    <div style="flex:1;height:1px;background:#1a1a3a"></div>O CON AMIGOS<div style="flex:1;height:1px;background:#1a1a3a"></div>
+  </div>
 
   <div class="input-group">
     <label>Servidor</label>
     <span class="hint">IP local (192.168.x.x:3000) o dominio Railway/Render</span>
-    <input type="text" id="input-server" placeholder="tu-app.up.railway.app" autocomplete="off" spellcheck="false">
+    <input type="text" id="input-server" placeholder="mi-app.up.railway.app" autocomplete="off" spellcheck="false">
   </div>
 
-  <button class="btn" id="btn-connect">CONECTAR Y ESPERAR</button>
+  <button class="btn" id="btn-connect">CONECTAR</button>
 
   <div class="status-box" id="status-box" style="display:none">
-    <div class="row"><span>Estado</span><span class="val" id="st-conn">Desconectado</span></div>
+    <div class="row"><span>Estado</span><span class="val" id="st-conn">—</span></div>
     <div class="row"><span>Jugadores</span><span class="val" id="st-players">0 / 3</span></div>
-    <div class="row"><span>Tu rol</span><span class="val" id="st-role">—</span></div>
+    <div class="row"><span>Rol</span><span class="val" id="st-role">—</span></div>
     <div class="row"><span>P2P</span><span class="val" id="st-p2p">—</span></div>
   </div>
 
   <div class="players-list" id="players-list" style="display:none">
-    <div class="player-slot p1" id="slot-1"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J1</span></div>
+    <div class="player-slot p1" id="slot-1"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J1 · HOST</span></div>
     <div class="player-slot p2" id="slot-2"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J2</span></div>
     <div class="player-slot p3" id="slot-3"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J3</span></div>
   </div>
+
+  <!-- Solo visible para el HOST una vez conectado -->
+  <button class="btn green" id="btn-start-game">▶ INICIAR PARTIDA</button>
+  <p id="waiting-host-msg" style="display:none;font-size:.7rem;color:#666;letter-spacing:.1em;text-align:center">Esperando que el host inicie...</p>
 </div>
 
-<!-- GAME -->
+<!-- ═══ GAME ═══ -->
 <div id="screen-game" class="screen">
   <div id="hud">
     <div class="hud-score" id="hud-scores"></div>
-    <div class="hud-wave" id="hud-wave">OLEADA 1</div>
-    <div class="hud-lives" id="hud-lives"></div>
+    <div class="hud-wave" id="hud-wave">OL.1</div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <div id="hud-buffs"></div>
+      <div class="hud-lives" id="hud-lives"></div>
+    </div>
   </div>
   <div id="wave-banner"></div>
   <canvas id="canvas"></canvas>
   <div id="controls">
+    <!-- D-PAD izquierdo -->
     <div class="ctrl-dpad">
+      <div class="ctrl-btn" id="btn-up">▲</div>
       <div class="ctrl-btn" id="btn-left">◀</div>
+      <div class="ctrl-btn" id="btn-down">▼</div>
       <div class="ctrl-btn" id="btn-right">▶</div>
     </div>
+    <!-- Fuego centro -->
     <div class="ctrl-btn" id="btn-fire">⚡</div>
-    <div style="width:128px"></div><!-- spacer right -->
+    <!-- Espacio derecho vacío -->
+    <div class="ctrl-right-pad"></div>
   </div>
 </div>
 
-<!-- OVERLAY -->
+<!-- ═══ OVERLAY ═══ -->
 <div id="overlay">
   <h2 id="overlay-title">GAME OVER</h2>
   <div class="big-score" id="overlay-score">0</div>
@@ -320,62 +174,82 @@
 </div>
 
 <script>
-// ════════════════════════════════════════════════════════
-//  SPACE RAIDERS  —  1 a 3 jugadores, online o local
-// ════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+//  SPACE RAIDERS  —  P2P multijugador completo
+//  Features:
+//    · Lobby manual: HOST decide cuándo empieza
+//    · Movimiento en X e Y (zona inferior limitada)
+//    · Colisión nave-nave: roba 1 vida al rival
+//    · Inmunidad + respawn tras recibir daño
+//    · Buffs que caen: auto-fire, rapid-fire, triple-shot
+//    · Arquitectura: HOST simula todo, clientes renderizan
+// ═══════════════════════════════════════════════════════════════════
 
-// ── STARFIELD ──────────────────────────────────────────
+// ── STARFIELD ──────────────────────────────────────────────────────
 ;(function(){
-  const c = document.getElementById('starfield');
-  const ctx = c.getContext('2d');
-  let stars = [];
-  function resize(){ c.width=innerWidth; c.height=innerHeight; }
-  function init(){ stars=[]; for(let i=0;i<120;i++) stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,s:Math.random()*.5+.1}); }
+  const c=document.getElementById('starfield'),ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;}
+  function init(){stars=[];for(let i=0;i<120;i++)stars.push({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+.2,s:Math.random()*.5+.1});}
   function draw(){
     ctx.clearRect(0,0,c.width,c.height);
-    stars.forEach(s=>{
-      s.y+=s.s; if(s.y>c.height){s.y=0;s.x=Math.random()*c.width;}
-      ctx.globalAlpha=.3+Math.random()*.3;
-      ctx.fillStyle='#fff';
-      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
-    });
-    ctx.globalAlpha=1;
-    requestAnimationFrame(draw);
+    stars.forEach(s=>{s.y+=s.s;if(s.y>c.height){s.y=0;s.x=Math.random()*c.width;}ctx.globalAlpha=.25+Math.random()*.3;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();});
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
   }
   addEventListener('resize',()=>{resize();init();});
-  resize(); init(); draw();
+  resize();init();draw();
 })();
 
-// ── PLAYER COLORS ──────────────────────────────────────
+// ── CONSTANTES ─────────────────────────────────────────────────────
 const PCOLORS = ['#00ffff','#ff00ff','#ffff00'];
 const PGLOW   = ['#0ff','#f0f','#ff0'];
 
-// ── NET (WebRTC P2P + WS signaling) ────────────────────
+// Zona en la que los jugadores pueden moverse (fracción de la altura del canvas)
+const PLAYER_ZONE_TOP    = 0.45;  // no pueden subir más de aquí
+const PLAYER_ZONE_BOTTOM = 0.98;
+
+// Respawn positions por playerNum (fracción X)
+const SPAWN_X = [0.2, 0.5, 0.8];
+
+// Inmunidad tras daño (frames a 60fps)
+const IMMUNITY_FRAMES = 180; // 3s
+
+// ── BUFF DEFINITIONS ───────────────────────────────────────────────
+// type: 'autofire' | 'rapid' | 'triple'
+const BUFF_DEFS = {
+  autofire: { icon:'🤖', label:'AUTO',  color:'#0ff', dur:600  }, // 10s
+  rapid:    { icon:'⚡', label:'x2',    color:'#ff0', dur:480  }, // 8s
+  triple:   { icon:'✦',  label:'x3',    color:'#f0f', dur:480  }
+};
+
+// ── NET ─────────────────────────────────────────────────────────────
 const NET = {
   ws: null,
-  myId: null,
-  myNum: 1,          // default 1 for solo
-  peers: {},
+  myId:   null,
+  myNum:  1,
+  isHost: false,
+  peers:  {},
   channels: {},
-  isHost: true,      // default true for solo
   allIds: [],
-  numPlayers: 1,     // how many players joined
+  numPlayers: 1,
 
-  connect(serverAddr, name) {
+  connect(addr, name) {
     return new Promise((resolve, reject) => {
       let url;
-      if (serverAddr.startsWith('ws://') || serverAddr.startsWith('wss://')) {
-        url = serverAddr;
+      if (addr.startsWith('ws://') || addr.startsWith('wss://')) {
+        url = addr;
       } else {
-        const isLocal = /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/.test(serverAddr);
-        url = `${isLocal ? 'ws' : 'wss'}://${serverAddr}`;
+        const isLocal = /^(localhost|127\.|192\.168\.|10\.|172\.(1[6-9]|2\d|3[01])\.)/.test(addr);
+        url = `${isLocal ? 'ws' : 'wss'}://${addr}`;
       }
-      UI.updateStatus(`Conectando...`, null, null, null);
       NET.ws = new WebSocket(url);
-      NET.ws.onopen = () => { NET.ws.send(JSON.stringify({type:'set_name',name})); resolve(); };
-      NET.ws.onerror = () => reject(new Error(`No se pudo conectar a ${url}`));
+      NET.ws.onopen = () => {
+        NET.ws.send(JSON.stringify({ type:'set_name', name }));
+        resolve();
+      };
+      NET.ws.onerror = () => reject(new Error(`No se pudo conectar: ${url}`));
       NET.ws.onmessage = e => NET._onSignal(JSON.parse(e.data));
-      NET.ws.onclose = () => { if(GAME.running) GAME.endGame('Conexión perdida'); };
+      NET.ws.onclose   = () => { if(GAME.running) GAME.endGame('Conexión perdida'); };
     });
   },
 
@@ -386,59 +260,49 @@ const NET = {
         NET.myNum  = msg.playerNum;
         NET.isHost = (msg.playerNum === 1);
         NET.numPlayers = msg.totalPlayers;
-        UI.updateStatus('Conectado ✓', msg.totalPlayers+' / 3', NET.isHost?'HOST':'Cliente', '—');
+        UI.st('conn','Conectado ✓','ok');
+        UI.st('players', msg.totalPlayers+' / 3');
+        UI.st('role', NET.isHost ? 'HOST' : 'Cliente');
         UI.updateSlot(msg.playerNum, MY_NAME, true);
-        // host can start with whoever is connected after a timeout
-        if(NET.isHost) NET._startHostTimer();
+        // Mostrar botón o mensaje según rol
+        if(NET.isHost) {
+          document.getElementById('btn-start-game').style.display = 'block';
+        } else {
+          document.getElementById('waiting-host-msg').style.display = 'block';
+        }
         break;
 
       case 'player_joined':
         NET.numPlayers = msg.totalPlayers;
-        UI.updateStatus(null, msg.totalPlayers+' / 3', null, null);
+        UI.st('players', msg.totalPlayers+' / 3');
         UI.updateSlot(msg.playerNum, '...', true);
-        if(NET.isHost) {
-          clearTimeout(NET._hostTimer);
-          NET._startHostTimer();
-        }
+        break;
+
+      case 'player_name':
+        UI.updateSlot(msg.playerNum, msg.name, true);
         break;
 
       case 'start_signaling':
         NET.allIds = msg.players.sort((a,b)=>a.playerNum-b.playerNum).map(p=>p.id);
         NET.numPlayers = msg.players.length;
-        UI.updateStatus('Conectado ✓', NET.numPlayers+' / 3 ✓', null, 'P2P...');
+        UI.st('players', NET.numPlayers+' / 3 ✓');
+        UI.st('p2p','Conectando...','warn');
         msg.players.forEach(p => {
           if(p.id !== NET.myId)
             NET._createPeer(p.id, p.playerNum, NET.isHost || (NET.myNum < p.playerNum));
         });
         break;
 
-      case 'offer':       NET._handleOffer(msg); break;
-      case 'answer':      NET._handleAnswer(msg); break;
+      case 'offer':         NET._handleOffer(msg); break;
+      case 'answer':        NET._handleAnswer(msg); break;
       case 'ice_candidate': NET._handleIce(msg); break;
-
-      case 'player_left':
-        if(GAME.running) GAME.endGame('Un jugador se desconectó');
-        break;
-
-      case 'error': UI.setError(msg.message); break;
+      case 'player_left':   if(GAME.running) GAME.endGame('Un jugador se desconectó'); break;
+      case 'error':         UI.st('conn','⚠ '+msg.message,'err'); break;
     }
   },
 
-  // Host waits up to 8s then starts with whoever is connected
-  _hostTimer: null,
-  _startHostTimer() {
-    clearTimeout(NET._hostTimer);
-    NET._hostTimer = setTimeout(() => {
-      // If nobody else connected, start solo via network (just me)
-      if(Object.keys(NET.channels).length === 0) {
-        // No peers at all — start as solo-network game
-        GAME.startAsHost();
-      }
-    }, 8000);
-  },
-
   _rtcConfig() {
-    return { iceServers: [
+    return { iceServers:[
       {urls:'stun:stun.l.google.com:19302'},
       {urls:'stun:stun1.l.google.com:19302'},
       {urls:'stun:stun.cloudflare.com:3478'}
@@ -456,15 +320,15 @@ const NET = {
       const dc = pc.createDataChannel('game',{ordered:false,maxRetransmits:0});
       NET.channels[remoteId] = dc;
       NET._setupChannel(dc, remoteId);
-      pc.createOffer().then(o=>{pc.setLocalDescription(o); NET.ws.send(JSON.stringify({type:'offer',to:remoteId,sdp:o}));});
+      pc.createOffer().then(o=>{pc.setLocalDescription(o);NET.ws.send(JSON.stringify({type:'offer',to:remoteId,sdp:o}));});
     } else {
       pc.ondatachannel = e => { NET.channels[remoteId]=e.channel; NET._setupChannel(e.channel,remoteId); };
     }
   },
 
   _setupChannel(dc, remoteId) {
-    dc.onopen  = () => NET._checkAllConnected();
-    dc.onclose = () => { if(GAME.running) GAME.endGame('P2P desconectado'); };
+    dc.onopen    = () => NET._checkAllConnected();
+    dc.onclose   = () => { if(GAME.running) GAME.endGame('P2P desconectado'); };
     dc.onmessage = e => GAME.onNetMsg(JSON.parse(e.data), remoteId);
   },
 
@@ -487,39 +351,37 @@ const NET = {
 
   _checkAllConnected() {
     const needed = NET.allIds.filter(id => id !== NET.myId);
-    if(needed.length === 0) return;
+    if(!needed.length) return;
     const ready = needed.every(id => NET.channels[id] && NET.channels[id].readyState==='open');
     if(ready) {
-      clearTimeout(NET._hostTimer);
-      UI.updateStatus(null,null,null,'P2P OK ✓');
-      if(NET.isHost) GAME.startAsHost();
+      UI.st('p2p','P2P OK ✓','ok');
+      // El host ya puede mostrar el botón (ya estaba visible), los clientes esperan
     }
   },
 
   broadcast(data) {
     const msg = JSON.stringify(data);
-    Object.values(NET.channels).forEach(dc => {
-      if(dc.readyState==='open') try{dc.send(msg);}catch{}
-    });
+    Object.values(NET.channels).forEach(dc=>{if(dc.readyState==='open')try{dc.send(msg);}catch{}});
+  },
+
+  sendTo(id, data) {
+    const dc = NET.channels[id];
+    if(dc && dc.readyState==='open') try{dc.send(JSON.stringify(data));}catch{}
   }
 };
 
-// ── UI ─────────────────────────────────────────────────
+// ── UI ──────────────────────────────────────────────────────────────
 const UI = {
-  updateStatus(conn,players,role,p2p) {
-    if(conn!==null){const el=document.getElementById('st-conn');el.textContent=conn;el.className='val '+(conn.includes('✓')?'ok':conn.includes('⚠')?'err':'warn');}
-    if(players!==null) document.getElementById('st-players').textContent=players;
-    if(role!==null) document.getElementById('st-role').textContent=role;
-    if(p2p!==null){const el=document.getElementById('st-p2p');el.textContent=p2p;el.className='val '+(p2p.includes('OK')?'ok':'warn');}
+  st(key,val,cls) {
+    const el = document.getElementById('st-'+key);
+    if(!el) return;
+    el.textContent = val;
+    if(cls) el.className = 'val ' + cls;
   },
   updateSlot(num,name,filled) {
     const s=document.getElementById('slot-'+num); if(!s)return;
     s.querySelector('.name').textContent=name||'Esperando...';
-    filled?s.classList.add('filled'):s.classList.remove('filled');
-  },
-  setError(msg) {
-    const el=document.getElementById('st-conn');
-    el.textContent='⚠ '+msg; el.className='val err';
+    filled ? s.classList.add('filled') : s.classList.remove('filled');
   },
   showScreen(id) {
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -531,37 +393,48 @@ const UI = {
     document.getElementById('overlay-msg').textContent=msg;
     document.getElementById('overlay').classList.add('active');
   },
-  showWaveBanner(wave) {
+  waveBanner(text) {
     const b=document.getElementById('wave-banner');
-    b.textContent = wave===1 ? '¡PREPARADO!' : `OLEADA ${wave}`;
-    b.classList.add('show');
-    setTimeout(()=>b.classList.remove('show'), 1800);
+    b.textContent=text; b.classList.add('show');
+    setTimeout(()=>b.classList.remove('show'),1800);
   }
 };
 
-// ── GAME ───────────────────────────────────────────────
+// ── GAME ────────────────────────────────────────────────────────────
 const GAME = {
-  canvas: null, ctx: null,
-  running: false,
-  wave: 1,
-  numActivePlayers: 1,   // players actually in game
+  canvas:null, ctx:null,
+  running:false, wave:1,
+  numActivePlayers:1,
 
-  invaders: [], invaderDir: 1, invaderSpeed: 1,
-  invaderDropTimer: 0,
-  bullets: [], invaderBullets: [],
-  shields: [],
-  scores: [0,0,0],
-  lives: [3,3,3],
+  // Estado autoritativo (host)
+  invaders:[], invaderDir:1, invaderSpeed:1,
+  invaderDropTimer:0,
+  bullets:[], invaderBullets:[],
+  shields:[],
+  scores:[0,0,0],
+  lives:[3,3,3],
 
-  myShip: {x:0, y:0},
-  remotePlayers: {},    // id → {x,y,num}
-  bulletIdCounter: 0,
+  // Buffs activos por jugador (índice 0-2): { autofire, rapid, triple } → frames restantes
+  playerBuffs:[ {autofire:0,rapid:0,triple:0}, {autofire:0,rapid:0,triple:0}, {autofire:0,rapid:0,triple:0} ],
+  // Buffs flotantes en el campo (host gestiona)
+  droppingBuffs:[], // { x,y,type,id }
+  buffIdCounter:0,
 
-  lastTime: 0, stateTimer: 0,
-  fireTimer: 0, invaderFireTimer: 0,
-  waveTransition: false,
+  // Inmunidad por jugador: frames restantes
+  immunity:[0,0,0],
 
-  keys: {left:false, right:false, fire:false},
+  // Nave local
+  myShip:{ x:0, y:0 },
+  // Naves remotas: id → { x,y,num,immune }
+  remotePlayers:{},
+
+  bulletIdCounter:0,
+  lastTime:0, stateTimer:0,
+  fireTimer:0, invaderFireTimer:0,
+  buffSpawnTimer:0,
+  waveTransition:false,
+
+  keys:{ left:false, right:false, up:false, down:false, fire:false },
 
   init() {
     GAME.canvas = document.getElementById('canvas');
@@ -572,61 +445,55 @@ const GAME = {
   },
 
   resize() {
-    const w = GAME.canvas.offsetWidth;
-    const h = GAME.canvas.offsetHeight;
-    // Only update if canvas is actually visible (non-zero size)
-    if(w > 0 && h > 0) {
-      GAME.canvas.width  = w;
-      GAME.canvas.height = h;
-    }
-    if(GAME.running) GAME.repositionShip();
+    const w=GAME.canvas.offsetWidth, h=GAME.canvas.offsetHeight;
+    if(w>0&&h>0){ GAME.canvas.width=w; GAME.canvas.height=h; }
+    if(GAME.running) GAME.repositionShip(false);
   },
 
-  W() { return GAME.canvas.width; },
-  H() { return GAME.canvas.height; },
+  W(){ return GAME.canvas.width; },
+  H(){ return GAME.canvas.height; },
 
-  repositionShip() {
-    const n   = NET.myNum;
-    const np  = GAME.numActivePlayers;
-    // spread ships across bottom based on number of players
-    const positions = np===1 ? [0.5] : np===2 ? [0.3,0.7] : [0.2,0.5,0.8];
-    const idx = Math.min(n-1, positions.length-1);
-    GAME.myShip.x = GAME.W() * positions[idx];
-    GAME.myShip.y = GAME.H() - 38;
+  spawnX(num) { return GAME.W() * SPAWN_X[num-1]; },
+  spawnY()    { return GAME.H() * 0.80; },
+
+  repositionShip(teleport=true) {
+    GAME.myShip.x = GAME.spawnX(NET.myNum);
+    GAME.myShip.y = GAME.spawnY();
   },
 
-  // Called by host (solo or network)
-  startAsHost() {
-    GAME.numActivePlayers = NET.numPlayers;
-    // Show screen FIRST so canvas has real dimensions before buildWave
+  // ── START ──────────────────────────────────────────────
+  startAsHost(numPlayers) {
+    GAME.numActivePlayers = numPlayers;
     UI.showScreen('game');
-    GAME.resize(); // force canvas size update
+    GAME.resize();
     GAME._initState(1);
-    NET.broadcast({type:'game_start', wave:1, numPlayers: GAME.numActivePlayers});
-    UI.showWaveBanner(1);
-    GAME.lastTime = performance.now();
+    NET.broadcast({ type:'game_start', wave:1, numPlayers });
+    UI.waveBanner('¡PREPARADOS!');
     GAME.running  = true;
+    GAME.lastTime = performance.now();
     requestAnimationFrame(GAME.loop);
   },
 
-  // Called on non-host clients receiving game_start
   startAsClient(numPlayers, wave) {
     GAME.numActivePlayers = numPlayers;
     UI.showScreen('game');
     GAME.resize();
     GAME._initState(wave);
-    UI.showWaveBanner(wave);
-    GAME.lastTime = performance.now();
+    UI.waveBanner('¡PREPARADOS!');
     GAME.running  = true;
+    GAME.lastTime = performance.now();
     requestAnimationFrame(GAME.loop);
   },
 
   _initState(wave) {
-    GAME.scores  = [0,0,0];
-    GAME.lives   = [3,3,3];
-    GAME.wave    = wave;
-    GAME.bullets = [];
+    GAME.scores         = [0,0,0];
+    GAME.lives          = [3,3,3];
+    GAME.immunity       = [0,0,0];
+    GAME.playerBuffs    = [{autofire:0,rapid:0,triple:0},{autofire:0,rapid:0,triple:0},{autofire:0,rapid:0,triple:0}];
+    GAME.wave           = wave;
+    GAME.bullets        = [];
     GAME.invaderBullets = [];
+    GAME.droppingBuffs  = [];
     GAME.remotePlayers  = {};
     GAME.fireTimer      = 0;
     GAME.waveTransition = false;
@@ -635,41 +502,38 @@ const GAME = {
   },
 
   buildWave(wave) {
-    GAME.invaders = [];
-    GAME.shields  = [];
+    GAME.invaders       = [];
+    GAME.shields        = [];
+    GAME.droppingBuffs  = [];
     GAME.waveTransition = false;
 
-    const cols = 10;
-    const rows = Math.min(2 + Math.floor((wave+1)/2), 6);
-    const W = GAME.W();
-    const spacingX = Math.min(42, (W - 40) / cols);
-    const startX = (W - spacingX*(cols-1)) / 2;
+    const cols=10, rows=Math.min(2+Math.floor((wave+1)/2),6);
+    const W=GAME.W();
+    const spacingX=Math.min(42,(W-40)/cols);
+    const startX=(W-spacingX*(cols-1))/2;
 
-    for(let r=0;r<rows;r++) {
-      for(let c=0;c<cols;c++) {
+    for(let r=0;r<rows;r++)
+      for(let c=0;c<cols;c++)
         GAME.invaders.push({
-          x: startX + c*spacingX,
-          y: 55 + r*30,
-          type: r===0 ? 2 : r<3 ? 1 : 0,
-          alive: true, animFrame: 0,
-          id: wave*10000 + r*100 + c    // unique per wave
+          x:startX+c*spacingX, y:50+r*30,
+          type: r===0?2:r<3?1:0,
+          alive:true, animFrame:0,
+          id: wave*10000+r*100+c
         });
-      }
-    }
 
-    // Shields — one per player position
-    const np = GAME.numActivePlayers;
-    const spos = np===1 ? [0.5] : np===2 ? [0.3,0.7] : [0.2,0.5,0.8];
-    spos.forEach((px,i)=>{
-      GAME.shields.push({x:GAME.W()*px-24, y:GAME.H()-78, hp:4, id:i});
+    // Escudos
+    SPAWN_X.slice(0, GAME.numActivePlayers).forEach((px,i)=>{
+      GAME.shields.push({ x:GAME.W()*px-24, y:GAME.H()*PLAYER_ZONE_TOP-20, hp:4, id:i });
     });
 
     GAME.invaderDir   = 1;
     GAME.invaderSpeed = 0.5 + wave*0.18;
     GAME.invaderFireTimer = 60;
     GAME.invaderDropTimer = 0;
+    GAME.buffSpawnTimer   = 180 + Math.random()*120;
   },
 
+  // ── LOOP ───────────────────────────────────────────────
   loop(ts) {
     if(!GAME.running) return;
     const dt = Math.min((ts - GAME.lastTime)/16.67, 3);
@@ -680,180 +544,289 @@ const GAME = {
     requestAnimationFrame(GAME.loop);
   },
 
+  // ── UPDATE ─────────────────────────────────────────────
   update(dt) {
-    if(GAME.waveTransition) return; // pause during wave change
-
+    if(GAME.waveTransition) return;
     const W=GAME.W(), H=GAME.H();
+    const myIdx = NET.myNum-1;
 
-    // ── Move my ship ──
-    const speed = 4 * dt;
-    if(GAME.keys.left)  GAME.myShip.x = Math.max(16, GAME.myShip.x - speed);
-    if(GAME.keys.right) GAME.myShip.x = Math.min(W-16, GAME.myShip.x + speed);
+    // ── Mover mi nave (X e Y limitado a zona inferior) ──
+    const spd = 4.5 * dt;
+    const minY = H * PLAYER_ZONE_TOP;
+    const maxY = H * PLAYER_ZONE_BOTTOM;
+    if(GAME.keys.left)  GAME.myShip.x = Math.max(14, GAME.myShip.x - spd);
+    if(GAME.keys.right) GAME.myShip.x = Math.min(W-14, GAME.myShip.x + spd);
+    if(GAME.keys.up)    GAME.myShip.y = Math.max(minY, GAME.myShip.y - spd*0.85);
+    if(GAME.keys.down)  GAME.myShip.y = Math.min(maxY, GAME.myShip.y + spd*0.85);
 
-    // ── Fire ──
+    // ── Inmunidad local ──
+    if(GAME.immunity[myIdx] > 0) GAME.immunity[myIdx] -= dt;
+
+    // ── Buff timers locales ──
+    const myBuffs = GAME.playerBuffs[myIdx];
+    if(myBuffs.autofire > 0) myBuffs.autofire -= dt;
+    if(myBuffs.rapid    > 0) myBuffs.rapid    -= dt;
+    if(myBuffs.triple   > 0) myBuffs.triple   -= dt;
+
+    // ── Disparar ──
     GAME.fireTimer -= dt;
-    const myIdx = NET.myNum - 1;
-    if(GAME.keys.fire && GAME.fireTimer <= 0 && GAME.lives[myIdx] > 0) {
-      GAME.fireTimer = 16;
-      const bid = NET.myNum*10000 + (GAME.bulletIdCounter++ % 9000);
-      const bullet = {x:GAME.myShip.x, y:GAME.myShip.y-16, vx:0, vy:-7, owner:NET.myNum, id:bid};
-      GAME.bullets.push(bullet);
-      NET.broadcast({type:'bullet', bullet});
+    const fireRate  = myBuffs.rapid > 0 ? 8 : 16;
+    const autoReady = myBuffs.autofire > 0;
+    const canFire   = (GAME.keys.fire || autoReady) && GAME.fireTimer <= 0 && GAME.lives[myIdx] > 0;
+
+    if(canFire) {
+      GAME.fireTimer = fireRate;
+      const tripleShot = myBuffs.triple > 0;
+      const baseId = NET.myNum*10000 + (GAME.bulletIdCounter++ % 9000);
+
+      const shootBullet = (vx) => {
+        const b = { x:GAME.myShip.x, y:GAME.myShip.y-16, vx, vy:-8, owner:NET.myNum, id:baseId+(vx*100|0)+100 };
+        GAME.bullets.push(b);
+        NET.broadcast({ type:'bullet', bullet:b });
+      };
+
+      shootBullet(0);
+      if(tripleShot) { shootBullet(-2); shootBullet(2); }
     }
 
-    // Broadcast position
-    NET.broadcast({type:'pos', x:GAME.myShip.x, y:GAME.myShip.y, num:NET.myNum});
+    // ── Broadcast posición ──
+    NET.broadcast({ type:'pos', x:GAME.myShip.x, y:GAME.myShip.y, num:NET.myNum,
+                    immune: GAME.immunity[myIdx] > 0 });
 
-    // ── Move bullets ──
+    // ── Mover balas propias ──
     GAME.bullets = GAME.bullets.filter(b=>{
-      b.x += b.vx*dt; b.y += b.vy*dt;
-      return b.y > -20 && b.y < H+20;
+      b.x+=b.vx*dt; b.y+=b.vy*dt;
+      return b.y>-20&&b.y<H+20&&b.x>-20&&b.x<W+20;
     });
 
-    // ── Host: invader logic ──
+    // ── HOST: lógica autoritativa ──
     if(NET.isHost) {
       GAME.stateTimer -= dt;
 
-      // Move invaders
+      // Invasores
       const alive = GAME.invaders.filter(i=>i.alive);
       if(alive.length > 0) {
-        alive.forEach(inv=>{ inv.x += GAME.invaderSpeed * GAME.invaderDir * dt; });
-        const hitEdge = alive.some(inv=> inv.x > W-18 || inv.x < 18);
+        alive.forEach(inv=>{ inv.x += GAME.invaderSpeed*GAME.invaderDir*dt; });
+        const hitEdge = alive.some(inv=> inv.x>W-18||inv.x<18);
         if(hitEdge) {
           GAME.invaderDir *= -1;
-          alive.forEach(inv=>{ inv.y += 12; });
-          // Speed up slightly each bounce
-          GAME.invaderSpeed = Math.min(GAME.invaderSpeed * 1.02, 8);
+          alive.forEach(inv=>{ inv.y+=12; });
+          GAME.invaderSpeed = Math.min(GAME.invaderSpeed*1.02, 8);
         }
-
-        // Animate
         GAME.invaderDropTimer += dt;
         if(GAME.invaderDropTimer > 35) {
           GAME.invaderDropTimer = 0;
           alive.forEach(inv=>inv.animFrame^=1);
         }
-
-        // Invader fire — more frequent as fewer remain
+        // Disparo invasores
         GAME.invaderFireTimer -= dt;
-        const fireRate = Math.max(15, 70 - GAME.wave*4 - (1 - alive.length/GAME.invaders.length)*30);
+        const fRate = Math.max(14, 70-GAME.wave*4-(1-alive.length/GAME.invaders.length)*30);
         if(GAME.invaderFireTimer <= 0) {
-          GAME.invaderFireTimer = fireRate;
-          // Pick shooter from bottom row of each column
-          const cols = {};
-          alive.forEach(inv=>{
-            const col = Math.round(inv.x/10);
-            if(!cols[col] || inv.y > cols[col].y) cols[col]=inv;
-          });
-          const shooters = Object.values(cols);
-          if(shooters.length > 0) {
-            const shooter = shooters[Math.floor(Math.random()*shooters.length)];
-            const b = {x:shooter.x, y:shooter.y+12, vx:(Math.random()-.5)*2, vy:3+GAME.wave*0.2,
-                       id:90000+(GAME.bulletIdCounter++%9000)};
-            GAME.invaderBullets.push(b);
+          GAME.invaderFireTimer = fRate;
+          const cols={};
+          alive.forEach(inv=>{ const c=Math.round(inv.x/10); if(!cols[c]||inv.y>cols[c].y)cols[c]=inv; });
+          const shooters=Object.values(cols);
+          if(shooters.length>0) {
+            const sh=shooters[Math.floor(Math.random()*shooters.length)];
+            GAME.invaderBullets.push({
+              x:sh.x, y:sh.y+12,
+              vx:(Math.random()-.5)*2,
+              vy:3+GAME.wave*0.2,
+              id:90000+(GAME.bulletIdCounter++%9000)
+            });
           }
         }
       }
 
-      // Move invader bullets
+      // Mover balas invasoras
       GAME.invaderBullets = GAME.invaderBullets.filter(b=>{
-        b.x += b.vx*dt; b.y += b.vy*dt;
-        return b.y < H+20;
+        b.x+=b.vx*dt; b.y+=b.vy*dt;
+        return b.y<H+20;
       });
 
-      // ── Collisions: player bullets vs invaders ──
+      // ── Colisión: balas jugador vs invasores ──
       GAME.bullets.forEach(bull=>{
-        if(bull.y < -10) return;
+        if(bull.y<-10)return;
         GAME.invaders.forEach(inv=>{
-          if(!inv.alive || bull.y < -10) return;
-          if(Math.abs(bull.x-inv.x)<14 && Math.abs(bull.y-inv.y)<10) {
-            inv.alive = false;
-            bull.y = -999;
-            GAME.scores[bull.owner-1] += [10,20,30][inv.type];
+          if(!inv.alive||bull.y<-10)return;
+          if(Math.abs(bull.x-inv.x)<14&&Math.abs(bull.y-inv.y)<10){
+            inv.alive=false; bull.y=-999;
+            GAME.scores[bull.owner-1]+=[10,20,30][inv.type];
           }
         });
       });
 
-      // ── Collisions: player bullets vs shields ──
+      // ── Colisión: balas jugador vs escudos ──
       GAME.bullets.forEach(bull=>{
-        if(bull.y < -10) return;
+        if(bull.y<-10)return;
         GAME.shields.forEach(sh=>{
-          if(sh.hp<=0) return;
-          if(bull.x>sh.x && bull.x<sh.x+48 && bull.y>sh.y && bull.y<sh.y+18) {
-            sh.hp--; bull.y=-999;
-          }
+          if(sh.hp<=0)return;
+          if(bull.x>sh.x&&bull.x<sh.x+48&&bull.y>sh.y&&bull.y<sh.y+18){sh.hp--;bull.y=-999;}
         });
       });
 
-      // ── Collisions: invader bullets vs shields ──
+      // ── Colisión: balas invasoras vs escudos ──
       GAME.invaderBullets.forEach(bull=>{
         GAME.shields.forEach(sh=>{
-          if(sh.hp<=0) return;
-          if(bull.x>sh.x && bull.x<sh.x+48 && bull.y>sh.y && bull.y<sh.y+18) {
-            sh.hp--; bull.y=H+100;
-          }
+          if(sh.hp<=0)return;
+          if(bull.x>sh.x&&bull.x<sh.x+48&&bull.y>sh.y&&bull.y<sh.y+18){sh.hp--;bull.y=H+100;}
         });
       });
 
-      // ── Collisions: invader bullets vs ships ──
-      const allShips = [
-        {x:GAME.myShip.x, y:GAME.myShip.y, num:NET.myNum},
-        ...Object.values(GAME.remotePlayers)
-      ];
+      // ── Colisión: balas invasoras vs naves ──
+      const allShips = GAME._allShips();
       GAME.invaderBullets.forEach(bull=>{
         allShips.forEach(ship=>{
-          const idx = ship.num-1;
-          if(GAME.lives[idx]<=0) return;
-          if(Math.abs(bull.x-ship.x)<14 && Math.abs(bull.y-ship.y)<14) {
-            GAME.lives[idx]--;
-            bull.y = H+100;
+          const idx=ship.num-1;
+          if(GAME.lives[idx]<=0||GAME.immunity[idx]>0)return;
+          if(Math.abs(bull.x-ship.x)<14&&Math.abs(bull.y-ship.y)<14){
+            GAME._hitPlayer(idx); bull.y=H+100;
           }
         });
       });
 
-      // Invaders reach bottom → instant lose
-      if(alive.some(inv=>inv.y > H-85)) {
-        GAME.lives = GAME.lives.map((_,i)=> i<GAME.numActivePlayers ? 0 : GAME.lives[i]);
+      // ── Colisión: nave vs nave ──
+      for(let i=0;i<allShips.length;i++){
+        for(let j=i+1;j<allShips.length;j++){
+          const a=allShips[i], b=allShips[j];
+          const ai=a.num-1, bi=b.num-1;
+          if(GAME.lives[ai]<=0||GAME.lives[bi]<=0)continue;
+          const dx=a.x-b.x, dy=a.y-b.y;
+          if(Math.abs(dx)<22&&Math.abs(dy)<22){
+            // Ambos se dañan mutuamente
+            if(GAME.immunity[ai]<=0) GAME._hitPlayer(ai);
+            if(GAME.immunity[bi]<=0) GAME._hitPlayer(bi);
+          }
+        }
+      }
+
+      // ── Colisión: naves vs balas de otros jugadores ──
+      GAME.bullets.forEach(bull=>{
+        if(bull.y<-10)return;
+        allShips.forEach(ship=>{
+          if(ship.num===bull.owner)return; // no se dispara a sí mismo
+          const idx=ship.num-1;
+          if(GAME.lives[idx]<=0||GAME.immunity[idx]>0)return;
+          if(Math.abs(bull.x-ship.x)<14&&Math.abs(bull.y-ship.y)<14){
+            GAME._hitPlayer(idx); bull.y=-999;
+            GAME.scores[bull.owner-1]+=5; // bonus por friendlyfire 😈
+          }
+        });
+      });
+
+      // ── Invasores llegan abajo ──
+      if(alive.some(inv=>inv.y>H*PLAYER_ZONE_TOP-10)){
+        GAME.lives=GAME.lives.map((_,i)=>i<GAME.numActivePlayers?0:GAME.lives[i]);
+      }
+
+      // ── Buffs cayendo ──
+      GAME.buffSpawnTimer -= dt;
+      if(GAME.buffSpawnTimer <= 0) {
+        GAME.buffSpawnTimer = 200 + Math.random()*200;
+        const types = Object.keys(BUFF_DEFS);
+        const type  = types[Math.floor(Math.random()*types.length)];
+        GAME.droppingBuffs.push({
+          x: 30 + Math.random()*(W-60),
+          y: 40,
+          vy: 1.2 + Math.random()*0.6,
+          type,
+          id: 50000 + (GAME.buffIdCounter++ % 9000)
+        });
+      }
+
+      GAME.droppingBuffs = GAME.droppingBuffs.filter(buff=>{
+        buff.y += buff.vy * dt;
+        // Recoger
+        allShips.forEach(ship=>{
+          if(GAME.lives[ship.num-1]<=0)return;
+          if(Math.abs(buff.x-ship.x)<18&&Math.abs(buff.y-ship.y)<18){
+            const idx = ship.num-1;
+            const dur = BUFF_DEFS[buff.type].dur;
+            GAME.playerBuffs[idx][buff.type] = dur;
+            buff.y = H+100;
+            // Notificar buff recogido
+            NET.broadcast({ type:'buff_pickup', playerNum:ship.num, buffType:buff.type, dur });
+          }
+        });
+        return buff.y < H+50;
+      });
+
+      // Buff timers remotos (host gestiona para todos)
+      for(let i=0;i<GAME.numActivePlayers;i++){
+        const pb = GAME.playerBuffs[i];
+        if(pb.autofire>0) pb.autofire-=dt;
+        if(pb.rapid>0)    pb.rapid-=dt;
+        if(pb.triple>0)   pb.triple-=dt;
+      }
+
+      // Inmunidad (host)
+      for(let i=0;i<GAME.numActivePlayers;i++){
+        if(GAME.immunity[i]>0) GAME.immunity[i]-=dt;
       }
 
       // ── Wave clear ──
       const aliveNow = GAME.invaders.filter(i=>i.alive);
-      if(aliveNow.length===0 && !GAME.waveTransition) {
-        GAME.waveTransition = true;
+      if(aliveNow.length===0 && !GAME.waveTransition){
+        GAME.waveTransition=true;
         GAME.wave++;
-        // Give brief pause before next wave
         setTimeout(()=>{
-          if(!GAME.running) return;
+          if(!GAME.running)return;
           GAME.buildWave(GAME.wave);
-          NET.broadcast({type:'wave', wave:GAME.wave, shields: GAME.shields});
-          UI.showWaveBanner(GAME.wave);
-        }, 1800);
+          NET.broadcast({type:'wave',wave:GAME.wave,shields:GAME.shields});
+          UI.waveBanner('OLEADA '+GAME.wave);
+        },1800);
       }
 
-      // ── Sync state to clients ──
-      if(GAME.stateTimer <= 0) {
-        GAME.stateTimer = 3;
+      // ── Sync state ──
+      if(GAME.stateTimer<=0){
+        GAME.stateTimer=3;
         NET.broadcast({
           type:'state',
           invaders: GAME.invaders.map(i=>({id:i.id,alive:i.alive,x:i.x,y:i.y,animFrame:i.animFrame})),
           invaderBullets: GAME.invaderBullets,
+          droppingBuffs:  GAME.droppingBuffs,
           shields: GAME.shields.map(s=>({id:s.id,hp:s.hp,x:s.x,y:s.y})),
-          scores: GAME.scores,
-          lives: GAME.lives,
+          scores:     GAME.scores,
+          lives:      GAME.lives,
+          immunity:   GAME.immunity,
+          playerBuffs:GAME.playerBuffs,
           wave: GAME.wave
         });
       }
 
-      // ── Game over: only active players count ──
-      const activeDead = GAME.lives.slice(0, GAME.numActivePlayers).every(l=>l<=0);
-      if(activeDead) {
-        NET.broadcast({type:'gameover', scores:GAME.scores});
+      // ── Game over ──
+      const activeDead = GAME.lives.slice(0,GAME.numActivePlayers).every(l=>l<=0);
+      if(activeDead){
+        NET.broadcast({type:'gameover',scores:GAME.scores});
         GAME.endGame('GAME OVER');
-        return;
       }
     }
   },
 
-  // ── Receive net messages (non-host clients) ──
+  // Golpear a un jugador (host only)
+  _hitPlayer(idx) {
+    if(GAME.lives[idx]<=0||GAME.immunity[idx]>0)return;
+    GAME.lives[idx]--;
+    GAME.immunity[idx] = IMMUNITY_FRAMES;
+    // Broadcast respawn
+    NET.broadcast({
+      type:'respawn',
+      playerNum: idx+1,
+      x: GAME.W()*SPAWN_X[idx],
+      y: GAME.spawnY()
+    });
+  },
+
+  // Todas las naves (host)
+  _allShips() {
+    const ships=[{ x:GAME.myShip.x, y:GAME.myShip.y, num:NET.myNum }];
+    Object.values(GAME.remotePlayers).forEach(p=>{
+      if(p.num && p.num!==NET.myNum) ships.push(p);
+    });
+    return ships;
+  },
+
+  // ── MENSAJES DE RED ─────────────────────────────────────
   onNetMsg(msg, fromId) {
     switch(msg.type) {
       case 'game_start':
@@ -862,9 +835,10 @@ const GAME = {
 
       case 'pos':
         if(!GAME.remotePlayers[fromId]) GAME.remotePlayers[fromId]={};
-        GAME.remotePlayers[fromId].x   = msg.x;
-        GAME.remotePlayers[fromId].y   = msg.y;
-        GAME.remotePlayers[fromId].num = msg.num;
+        GAME.remotePlayers[fromId].x      = msg.x;
+        GAME.remotePlayers[fromId].y      = msg.y;
+        GAME.remotePlayers[fromId].num    = msg.num;
+        GAME.remotePlayers[fromId].immune = msg.immune;
         break;
 
       case 'bullet':
@@ -874,283 +848,286 @@ const GAME = {
 
       case 'state':
         if(NET.isHost) break;
-        // Reconcile invaders
         msg.invaders.forEach(d=>{
-          const inv = GAME.invaders.find(i=>i.id===d.id);
-          if(inv){ inv.alive=d.alive; inv.x=d.x; inv.y=d.y; inv.animFrame=d.animFrame; }
+          const inv=GAME.invaders.find(i=>i.id===d.id);
+          if(inv){inv.alive=d.alive;inv.x=d.x;inv.y=d.y;inv.animFrame=d.animFrame;}
         });
         GAME.invaderBullets = msg.invaderBullets;
+        GAME.droppingBuffs  = msg.droppingBuffs  || [];
         msg.shields.forEach(d=>{
-          const sh = GAME.shields.find(s=>s.id===d.id);
-          if(sh){ sh.hp=d.hp; sh.x=d.x; sh.y=d.y; }
+          const sh=GAME.shields.find(s=>s.id===d.id);
+          if(sh){sh.hp=d.hp;sh.x=d.x;sh.y=d.y;}
         });
-        GAME.scores = msg.scores;
-        GAME.lives  = msg.lives;
-        GAME.wave   = msg.wave;
+        GAME.scores      = msg.scores;
+        GAME.lives       = msg.lives;
+        GAME.immunity    = msg.immunity;
+        GAME.playerBuffs = msg.playerBuffs;
+        GAME.wave        = msg.wave;
         break;
 
       case 'wave':
-        if(!NET.isHost) {
-          GAME.wave = msg.wave;
+        if(!NET.isHost){
+          GAME.wave=msg.wave;
           GAME.buildWave(msg.wave);
-          // Override shields from host
-          if(msg.shields) GAME.shields = msg.shields;
-          UI.showWaveBanner(msg.wave);
+          if(msg.shields) GAME.shields=msg.shields;
+          UI.waveBanner('OLEADA '+msg.wave);
+        }
+        break;
+
+      case 'buff_pickup':
+        if(!NET.isHost) {
+          const idx = msg.playerNum-1;
+          GAME.playerBuffs[idx][msg.buffType] = msg.dur;
+        }
+        break;
+
+      case 'respawn':
+        // Si me toca a mí
+        if(msg.playerNum === NET.myNum){
+          GAME.myShip.x = msg.x;
+          GAME.myShip.y = msg.y;
         }
         break;
 
       case 'gameover':
-        if(!NET.isHost) { GAME.scores=msg.scores; GAME.endGame('GAME OVER'); }
+        if(!NET.isHost){ GAME.scores=msg.scores; GAME.endGame('GAME OVER'); }
         break;
     }
   },
 
   endGame(reason) {
-    GAME.running = false;
+    GAME.running=false;
     const myScore  = GAME.scores[NET.myNum-1];
     const maxScore = Math.max(...GAME.scores.slice(0,GAME.numActivePlayers));
-    const winnerIdx= GAME.scores.indexOf(maxScore);
-    let msg;
-    if(GAME.numActivePlayers===1) {
-      msg = `Puntuación: ${myScore}\nOleada alcanzada: ${GAME.wave}`;
-    } else {
-      msg = `Ganador: J${winnerIdx+1} con ${maxScore} pts\nTu puntuación: ${myScore}`;
-    }
-    UI.showOverlay(reason, myScore, msg);
+    const winIdx   = GAME.scores.indexOf(maxScore);
+    let msgTxt;
+    if(GAME.numActivePlayers===1)
+      msgTxt = `Puntuación: ${myScore}\nOleada: ${GAME.wave}`;
+    else
+      msgTxt = `🏆 Ganador: J${winIdx+1}  (${maxScore} pts)\n` +
+               GAME.scores.slice(0,GAME.numActivePlayers).map((s,i)=>`J${i+1}: ${s}`).join('  ');
+    UI.showOverlay(reason, myScore, msgTxt);
   },
 
-  // ── RENDER ──────────────────────────────────────────
+  // ── RENDER ──────────────────────────────────────────────
   render() {
     const ctx=GAME.ctx, W=GAME.W(), H=GAME.H();
     ctx.clearRect(0,0,W,H);
-    ctx.fillStyle='#000008';
-    ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#000008'; ctx.fillRect(0,0,W,H);
 
-    // Shields
+    // Línea que separa zona jugadores
+    ctx.strokeStyle='#0ff1'; ctx.lineWidth=1;
+    ctx.setLineDash([4,6]);
+    ctx.beginPath(); ctx.moveTo(0,H*PLAYER_ZONE_TOP); ctx.lineTo(W,H*PLAYER_ZONE_TOP);
+    ctx.stroke(); ctx.setLineDash([]);
+
+    // Escudos
     GAME.shields.forEach(sh=>{
-      if(sh.hp<=0) return;
+      if(sh.hp<=0)return;
       ctx.shadowColor='#0f8'; ctx.shadowBlur=6;
       ctx.fillStyle=`rgba(0,200,80,${sh.hp/4})`;
-      // Draw bunker shape
-      ctx.fillRect(sh.x, sh.y+6, 48, 12);
-      ctx.fillRect(sh.x+8, sh.y, 32, 18);
-      // notch
-      ctx.clearRect(sh.x+14, sh.y+12, 8, 6);
-      ctx.clearRect(sh.x+26, sh.y+12, 8, 6);
+      ctx.fillRect(sh.x,sh.y+6,48,12);
+      ctx.fillRect(sh.x+8,sh.y,32,18);
+      ctx.clearRect(sh.x+14,sh.y+12,8,6);
+      ctx.clearRect(sh.x+26,sh.y+12,8,6);
       ctx.shadowBlur=0;
     });
 
-    // Invaders
-    GAME.invaders.forEach(inv=>{
-      if(!inv.alive) return;
-      GAME.drawInvader(ctx, inv.x, inv.y, inv.type, inv.animFrame);
-    });
+    // Invasores
+    GAME.invaders.forEach(inv=>{ if(inv.alive) GAME.drawInvader(ctx,inv.x,inv.y,inv.type,inv.animFrame); });
 
-    // Invader bullets
+    // Balas invasoras
     GAME.invaderBullets.forEach(b=>{
-      ctx.fillStyle='#f84';
-      ctx.shadowColor='#f84'; ctx.shadowBlur=5;
-      ctx.fillRect(b.x-1.5, b.y-5, 3, 10);
-      ctx.shadowBlur=0;
+      ctx.fillStyle='#f84'; ctx.shadowColor='#f84'; ctx.shadowBlur=5;
+      ctx.fillRect(b.x-1.5,b.y-5,3,10); ctx.shadowBlur=0;
     });
 
-    // Player bullets
+    // Buffs cayendo
+    GAME.droppingBuffs.forEach(buff=>{
+      const def = BUFF_DEFS[buff.type];
+      ctx.save();
+      ctx.translate(buff.x, buff.y);
+      ctx.shadowColor=def.color; ctx.shadowBlur=10;
+      ctx.strokeStyle=def.color; ctx.lineWidth=2;
+      ctx.strokeRect(-12,-10,24,20);
+      ctx.fillStyle=def.color+'33'; ctx.fillRect(-12,-10,24,20);
+      ctx.fillStyle='#fff'; ctx.font='bold 11px Courier New';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(def.label, 0, 0);
+      ctx.shadowBlur=0; ctx.restore();
+    });
+
+    // Balas jugadores
     GAME.bullets.forEach(b=>{
-      const col = PCOLORS[b.owner-1]||'#fff';
-      ctx.fillStyle=col;
-      ctx.shadowColor=PGLOW[b.owner-1]||'#fff'; ctx.shadowBlur=8;
-      ctx.fillRect(b.x-2, b.y-8, 4, 14);
-      ctx.shadowBlur=0;
+      const col=PCOLORS[b.owner-1]||'#fff';
+      ctx.fillStyle=col; ctx.shadowColor=PGLOW[b.owner-1]||'#fff'; ctx.shadowBlur=8;
+      ctx.fillRect(b.x-2,b.y-8,4,14); ctx.shadowBlur=0;
     });
 
-    // Remote ships
+    // Naves remotas
     Object.values(GAME.remotePlayers).forEach(p=>{
-      if(GAME.lives[p.num-1]<=0) return;
-      GAME.drawShip(ctx, p.x, p.y, p.num);
+      if(!p.num||GAME.lives[p.num-1]<=0)return;
+      GAME.drawShip(ctx,p.x,p.y,p.num,p.immune);
     });
 
-    // My ship
-    if(GAME.lives[NET.myNum-1]>0) {
-      GAME.drawShip(ctx, GAME.myShip.x, GAME.myShip.y, NET.myNum);
-    } else {
-      // Draw explosion placeholder
-      ctx.fillStyle='#f840';
-      ctx.font='20px monospace';
-      ctx.textAlign='center';
-    }
+    // Mi nave
+    const myIdx = NET.myNum-1;
+    if(GAME.lives[myIdx]>0)
+      GAME.drawShip(ctx,GAME.myShip.x,GAME.myShip.y,NET.myNum, GAME.immunity[myIdx]>0);
   },
 
-  drawShip(ctx, x, y, num) {
+  drawShip(ctx, x, y, num, immune) {
     const color=PCOLORS[num-1], glow=PGLOW[num-1];
+    // Parpadeo durante inmunidad
+    if(immune && Math.floor(Date.now()/80)%2===0) return;
     ctx.save();
-    ctx.translate(x, y);
+    ctx.translate(x,y);
     ctx.shadowColor=glow; ctx.shadowBlur=14;
     ctx.fillStyle=color;
-    // Body
     ctx.beginPath();
-    ctx.moveTo(0,-16);
-    ctx.lineTo(12,8); ctx.lineTo(7,5);
-    ctx.lineTo(0,8);  ctx.lineTo(-7,5);
-    ctx.lineTo(-12,8);
-    ctx.closePath();
-    ctx.fill();
-    // Engine glow
-    ctx.fillStyle='#fff4';
-    ctx.fillRect(-4,6,3,5);
-    ctx.fillRect(1,6,3,5);
-    // Cockpit
-    ctx.fillStyle='#fffa';
-    ctx.beginPath(); ctx.ellipse(0,-5,3,5,0,0,Math.PI*2); ctx.fill();
+    ctx.moveTo(0,-16); ctx.lineTo(12,8); ctx.lineTo(7,5);
+    ctx.lineTo(0,8);   ctx.lineTo(-7,5); ctx.lineTo(-12,8);
+    ctx.closePath(); ctx.fill();
+    // Motor
+    ctx.fillStyle='#fff4'; ctx.fillRect(-4,6,3,5); ctx.fillRect(1,6,3,5);
+    // Cabina
+    ctx.fillStyle='#fffa'; ctx.beginPath(); ctx.ellipse(0,-5,3,5,0,0,Math.PI*2); ctx.fill();
     ctx.shadowBlur=0;
+    // Buffs activos: indicador visual
+    const pb = GAME.playerBuffs[num-1];
+    let bx=-10;
+    if(pb && pb.triple>0){ctx.fillStyle='#f0f';ctx.font='7px sans-serif';ctx.textAlign='left';ctx.fillText('✦',bx,-20);bx+=9;}
+    if(pb && pb.rapid>0) {ctx.fillStyle='#ff0';ctx.font='7px sans-serif';ctx.textAlign='left';ctx.fillText('⚡',bx,-20);bx+=9;}
+    if(pb && pb.autofire>0){ctx.fillStyle='#0ff';ctx.font='7px sans-serif';ctx.textAlign='left';ctx.fillText('A',bx,-20);}
     // Label
-    ctx.fillStyle=color+'cc';
-    ctx.font='bold 8px Courier New';
-    ctx.textAlign='center';
-    ctx.fillText('J'+num, 0, 22);
+    ctx.fillStyle=color+'cc'; ctx.font='bold 8px Courier New';
+    ctx.textAlign='center'; ctx.fillText('J'+num,0,22);
     ctx.restore();
   },
 
-  drawInvader(ctx, x, y, type, frame) {
-    ctx.save();
-    ctx.translate(x,y);
+  drawInvader(ctx,x,y,type,frame){
+    ctx.save(); ctx.translate(x,y);
     const colors=['#88f','#4d4','#f44'];
     ctx.fillStyle=colors[type]; ctx.shadowColor=colors[type]; ctx.shadowBlur=5;
-
-    if(type===0) { // crab
-      ctx.fillRect(-8,-5,4,10); ctx.fillRect(-4,-7,8,3); ctx.fillRect(-4,4,8,3); ctx.fillRect(4,-5,4,10);
+    if(type===0){
+      ctx.fillRect(-8,-5,4,10);ctx.fillRect(-4,-7,8,3);ctx.fillRect(-4,4,8,3);ctx.fillRect(4,-5,4,10);
       if(frame){ctx.fillRect(-10,-3,2,6);ctx.fillRect(8,-3,2,6);}
       else{ctx.fillRect(-12,-5,2,4);ctx.fillRect(10,-5,2,4);}
-      // eyes
-      ctx.fillStyle='#fff'; ctx.fillRect(-5,-2,2,2); ctx.fillRect(3,-2,2,2);
-    } else if(type===1) { // squid
-      ctx.fillRect(-7,-6,14,8); ctx.fillRect(-4,-8,8,2); ctx.fillRect(-9,-2,2,6); ctx.fillRect(7,-2,2,6);
+      ctx.fillStyle='#fff';ctx.fillRect(-5,-2,2,2);ctx.fillRect(3,-2,2,2);
+    }else if(type===1){
+      ctx.fillRect(-7,-6,14,8);ctx.fillRect(-4,-8,8,2);ctx.fillRect(-9,-2,2,6);ctx.fillRect(7,-2,2,6);
       if(frame){ctx.fillRect(-5,2,4,4);ctx.fillRect(1,2,4,4);}
       else{ctx.fillRect(-4,2,3,5);ctx.fillRect(1,2,3,5);}
-      ctx.fillStyle='#fff'; ctx.fillRect(-4,-4,2,2); ctx.fillRect(2,-4,2,2);
-    } else { // ufo
-      ctx.beginPath(); ctx.ellipse(0,-2,10,5,0,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle=colors[type]+'aa';
-      ctx.beginPath(); ctx.ellipse(0,-5,5,3,0,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#fff';ctx.fillRect(-4,-4,2,2);ctx.fillRect(2,-4,2,2);
+    }else{
+      ctx.beginPath();ctx.ellipse(0,-2,10,5,0,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle=colors[type]+'aa';ctx.beginPath();ctx.ellipse(0,-5,5,3,0,0,Math.PI*2);ctx.fill();
       if(frame){ctx.fillStyle='#ff0';ctx.fillRect(-7,1,3,3);ctx.fillRect(-1,1,3,3);ctx.fillRect(5,1,3,3);}
       else{ctx.fillStyle='#f00';ctx.fillRect(-7,1,3,3);ctx.fillRect(-1,1,3,3);ctx.fillRect(5,1,3,3);}
     }
-    ctx.shadowBlur=0;
-    ctx.restore();
+    ctx.shadowBlur=0; ctx.restore();
   },
 
+  // ── HUD ──────────────────────────────────────────────────
   updateHUD() {
-    // Scores: only show active players
+    // Scores
     let scHTML='';
-    for(let i=0;i<GAME.numActivePlayers;i++) {
-      scHTML+=`<span style="color:${PCOLORS[i]};margin-right:6px">J${i+1}:<b>${GAME.scores[i]}</b></span>`;
-    }
+    for(let i=0;i<GAME.numActivePlayers;i++)
+      scHTML+=`<span style="color:${PCOLORS[i]};margin-right:5px">J${i+1}:<b>${GAME.scores[i]}</b></span>`;
     document.getElementById('hud-scores').innerHTML=scHTML;
-    document.getElementById('hud-wave').textContent=`OL.${GAME.wave}`;
+    document.getElementById('hud-wave').textContent='OL.'+GAME.wave;
 
-    // Lives for my player
-    const myLives = GAME.lives[NET.myNum-1];
+    // Buffs míos
+    const pb = GAME.playerBuffs[NET.myNum-1];
+    let bHTML='';
+    Object.entries(BUFF_DEFS).forEach(([k,def])=>{
+      if(pb&&pb[k]>0)
+        bHTML+=`<span class="buff-icon" style="border-color:${def.color};color:${def.color}">${def.label}</span>`;
+    });
+    document.getElementById('hud-buffs').innerHTML=bHTML;
+
+    // Vidas
+    const myLives=GAME.lives[NET.myNum-1];
     let lHTML='';
     for(let i=0;i<3;i++)
       lHTML+=`<span style="color:${PCOLORS[NET.myNum-1]};opacity:${i<myLives?1:.15};font-size:.85rem">▲</span>`;
     document.getElementById('hud-lives').innerHTML=lHTML;
   },
 
-  // ── CONTROLS ────────────────────────────────────────
+  // ── CONTROLS ─────────────────────────────────────────────
   setupControls() {
-    const press = (k,v) => GAME.keys[k]=v;
-    const btnL = document.getElementById('btn-left');
-    const btnR = document.getElementById('btn-right');
-    const btnF = document.getElementById('btn-fire');
-
-    // Touch controls — use pointer events for reliability
-    function addPointer(el, key) {
-      el.addEventListener('pointerdown', e=>{
-        e.preventDefault();
-        press(key,true);
-        el.classList.add('pressed');
-        el.setPointerCapture(e.pointerId);
-      }, {passive:false});
-      el.addEventListener('pointerup',   e=>{ e.preventDefault(); press(key,false); el.classList.remove('pressed'); }, {passive:false});
-      el.addEventListener('pointercancel',e=>{ press(key,false); el.classList.remove('pressed'); });
-    }
-    addPointer(btnL,'left');
-    addPointer(btnR,'right');
-    addPointer(btnF,'fire');
-
-    // Keyboard
-    const keyMap = {
-      'ArrowLeft':'left','a':'left','A':'left',
-      'ArrowRight':'right','d':'right','D':'right',
-      ' ':'fire'
+    const press=(k,v)=>GAME.keys[k]=v;
+    const btns={
+      'btn-left':'left','btn-right':'right',
+      'btn-up':'up','btn-down':'down',
+      'btn-fire':'fire'
     };
-    addEventListener('keydown', e=>{
-      if(keyMap[e.key]!==undefined){ e.preventDefault(); press(keyMap[e.key],true); }
+    Object.entries(btns).forEach(([id,key])=>{
+      const el=document.getElementById(id);
+      el.addEventListener('pointerdown',e=>{e.preventDefault();press(key,true);el.classList.add('pressed');el.setPointerCapture(e.pointerId);},{passive:false});
+      el.addEventListener('pointerup',  e=>{e.preventDefault();press(key,false);el.classList.remove('pressed');},{passive:false});
+      el.addEventListener('pointercancel',()=>{press(key,false);el.classList.remove('pressed');});
     });
-    addEventListener('keyup', e=>{
-      if(keyMap[e.key]!==undefined) press(keyMap[e.key],false);
+    // Teclado
+    const keyMap={'ArrowLeft':'left','a':'left','A':'left','ArrowRight':'right','d':'right','D':'right',
+                  'ArrowUp':'up','w':'up','W':'up','ArrowDown':'down','s':'down','S':'down',' ':'fire'};
+    addEventListener('keydown',e=>{
+      if(document.activeElement.tagName==='INPUT') return;
+      if(keyMap[e.key]){e.preventDefault();press(keyMap[e.key],true);}
     });
-
-    // Swipe on canvas (alternative mobile control)
-    let touchStartX = null;
-    GAME.canvas.addEventListener('touchstart', e=>{
-      touchStartX = e.touches[0].clientX;
-    }, {passive:true});
-    GAME.canvas.addEventListener('touchmove', e=>{
-      if(touchStartX===null) return;
-      const dx = e.touches[0].clientX - touchStartX;
-      press('left', dx < -10);
-      press('right', dx > 10);
-    }, {passive:true});
-    GAME.canvas.addEventListener('touchend', e=>{
-      press('left',false); press('right',false);
-      // Tap on canvas = fire
-      if(Math.abs(e.changedTouches[0].clientX - (touchStartX||0)) < 15)
-        press('fire',true);
-      touchStartX=null;
-      setTimeout(()=>press('fire',false),120);
-    }, {passive:true});
+    addEventListener('keyup',e=>{
+      if(document.activeElement.tagName==='INPUT') return;
+      if(keyMap[e.key])press(keyMap[e.key],false);
+    });
   }
 };
 
-// ── LOBBY LOGIC ─────────────────────────────────────────
+// ── LOBBY ─────────────────────────────────────────────────────────
 let MY_NAME = 'Piloto';
 
-// Solo play
+// Modo solo
 document.getElementById('btn-solo').addEventListener('click', ()=>{
   MY_NAME = document.getElementById('input-name').value.trim() || 'Piloto';
-  NET.myNum  = 1;
-  NET.isHost = true;
+  NET.myNum      = 1;
+  NET.isHost     = true;
   NET.numPlayers = 1;
-  GAME.startAsHost();
+  GAME.startAsHost(1);
 });
 
-// Network play
+
+
 document.getElementById('btn-connect').addEventListener('click', async ()=>{
   const serverAddr = document.getElementById('input-server').value.trim();
   MY_NAME = document.getElementById('input-name').value.trim() || 'Piloto';
-  if(!serverAddr){ UI.setError('Introduce la dirección del servidor'); return; }
+  if(!serverAddr){ UI.st('conn','⚠ Introduce la dirección del servidor','err'); return; }
 
   const btn = document.getElementById('btn-connect');
-  btn.disabled = true;
-  btn.textContent = 'CONECTANDO...';
+  btn.disabled=true; btn.textContent='CONECTANDO...';
 
-  // Show status panels
   document.getElementById('status-box').style.display='block';
   document.getElementById('players-list').style.display='flex';
-  UI.updateSlot(1,'Esperando...',false);
-  UI.updateSlot(2,'Esperando...',false);
-  UI.updateSlot(3,'Esperando...',false);
 
   try {
     await NET.connect(serverAddr, MY_NAME);
-    btn.textContent = 'ESPERANDO... (máx 8s)';
+    btn.textContent='ESPERANDO JUGADORES...';
   } catch(e) {
-    btn.disabled=false;
-    btn.textContent='CONECTAR Y ESPERAR';
-    UI.setError(e.message);
+    btn.disabled=false; btn.textContent='CONECTAR';
+    UI.st('conn','⚠ '+e.message,'err');
     document.getElementById('status-box').style.display='none';
     document.getElementById('players-list').style.display='none';
   }
+});
+
+// HOST inicia manualmente
+document.getElementById('btn-start-game').addEventListener('click', ()=>{
+  if(!NET.isHost) return;
+  const np = NET.numPlayers;
+  // Broadcast por P2P
+  NET.broadcast({ type:'game_start', wave:1, numPlayers: np });
+  // También avisar por WS por si algún canal P2P no está listo aún
+  if(NET.ws && NET.ws.readyState===WebSocket.OPEN)
+    NET.ws.send(JSON.stringify({ type:'host_start' }));
+  GAME.startAsHost(np);
 });
 
 document.getElementById('btn-restart').addEventListener('click', ()=>location.reload());
