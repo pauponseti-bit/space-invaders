@@ -127,10 +127,17 @@ wss.on('connection', (ws, req) => {
       // Este mensaje no necesita relay especial: el host lo manda
       // directamente por P2P una vez establecidos los canales.
       // El server solo lo necesita si algún cliente aún no tiene canal.
-      case 'host_start':
+      case 'host_start': {
         gameStarted = true;
-        broadcast({ type:'host_start' }, id);
+        const currentPlayers = players.map((p, i) => ({ id: p.id, playerNum: i + 1 }));
+        // Si no se habia hecho signaling aun (menos de 3 jugadores), hacerlo ahora
+        broadcast({ type:'start_signaling', players: currentPlayers });
+        // Pequeño delay para que el signaling arranque antes del game_start
+        setTimeout(() => {
+          broadcast({ type:'host_start', numPlayers: players.length }, id);
+        }, 200);
         break;
+      }
     }
   });
 
