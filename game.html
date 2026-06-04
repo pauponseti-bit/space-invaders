@@ -133,8 +133,8 @@ input[type=text]:focus{border-color:var(--c2);box-shadow:inset 0 0 10px #f0f1,0 
     <div class="player-slot p3" id="slot-3"><div class="dot"></div><span class="name">Esperando...</span><span class="tag">J3</span></div>
   </div>
 
-  <!-- Solo visible para el HOST una vez conectado -->
-  <button class="btn green" id="btn-start-game">▶ INICIAR PARTIDA</button>
+  <!-- Solo visible para el HOST una vez que P2P está listo -->
+  <button class="btn green" id="btn-start-game" style="display:none" disabled>▶ INICIANDO P2P...</button>
   <p id="waiting-host-msg" style="display:none;font-size:.7rem;color:#666;letter-spacing:.1em;text-align:center">Esperando que el host inicie...</p>
 </div>
 
@@ -298,6 +298,9 @@ const NET = {
       case 'ice_candidate': NET._handleIce(msg); break;
       case 'player_left':   if(GAME.running) GAME.endGame('Un jugador se desconectó'); break;
       case 'error':         UI.st('conn','⚠ '+msg.message,'err'); break;
+      case 'host_start':
+        if(!NET.isHost && !GAME.running) GAME.startAsClient(msg.numPlayers || NET.numPlayers, 1);
+        break;
     }
   },
 
@@ -349,13 +352,28 @@ const NET = {
     if(pc) try { await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); } catch{}
   },
 
+  _pendingStart: false,
+
   _checkAllConnected() {
     const needed = NET.allIds.filter(id => id !== NET.myId);
     if(!needed.length) return;
     const ready = needed.every(id => NET.channels[id] && NET.channels[id].readyState==='open');
-    if(ready) {
-      UI.st('p2p','P2P OK ✓','ok');
-      // El host ya puede mostrar el botón (ya estaba visible), los clientes esperan
+    if(!ready) return;
+
+    UI.st('p2p','P2P OK ✓','ok');
+
+    if(NET.isHost) {
+      const btn = document.getElementById('btn-start-game');
+      btn.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = '▶ INICIAR PARTIDA';
+    }
+
+    // Si el host pulsó antes de que P2P estuviera listo, disparar ahora
+    if(NET._pendingStart) {
+      NET._pendingStart = false;
+      NET.broadcast({ type:'game_start', wave:1, numPlayers: NET.numPlayers });
+      if(NET.isHost) GAME.startAsHost(NET.numPlayers);
     }
   },
 
@@ -463,11 +481,11 @@ const GAME = {
 
   // ── START ──────────────────────────────────────────────
   startAsHost(numPlayers) {
+    if(GAME.running) return; // evitar doble arranque
     GAME.numActivePlayers = numPlayers;
     UI.showScreen('game');
     GAME.resize();
     GAME._initState(1);
-    NET.broadcast({ type:'game_start', wave:1, numPlayers });
     UI.waveBanner('¡PREPARADOS!');
     GAME.running  = true;
     GAME.lastTime = performance.now();
@@ -475,6 +493,7 @@ const GAME = {
   },
 
   startAsClient(numPlayers, wave) {
+    if(GAME.running) return; // evitar doble arranque
     GAME.numActivePlayers = numPlayers;
     UI.showScreen('game');
     GAME.resize();
@@ -1121,13 +1140,30 @@ document.getElementById('btn-connect').addEventListener('click', async ()=>{
 // HOST inicia manualmente
 document.getElementById('btn-start-game').addEventListener('click', ()=>{
   if(!NET.isHost) return;
-  const np = NET.numPlayers;
-  // Broadcast por P2P
-  NET.broadcast({ type:'game_start', wave:1, numPlayers: np });
-  // También avisar por WS por si algún canal P2P no está listo aún
-  if(NET.ws && NET.ws.readyState===WebSocket.OPEN)
+  const btn = document.getElementById('btn-start-game');
+  btn.disabled = true;
+  btn.textContent = 'INICIANDO...';
+
+  const needed = NET.allIds.filter(id => id !== NET.myId);
+  const allReady = needed.length > 0 &&
+    needed.every(id => NET.channels[id] && NET.channels[id].readyState === 'open');
+
+  // Siempre avisar al servidor para que haga signaling y retransmita a clientes
+  if(NET.ws && NET.ws.readyState === WebSocket.OPEN)
     NET.ws.send(JSON.stringify({ type:'host_start' }));
-  GAME.startAsHost(np);
+
+  if(allReady) {
+    // Canales P2P listos: enviar game_start y arrancar
+    NET.broadcast({ type:'game_start', wave:1, numPlayers: NET.numPlayers });
+    GAME.startAsHost(NET.numPlayers);
+  } else if(needed.length === 0) {
+    // Solo: arrancar directo sin P2P
+    GAME.startAsHost(NET.numPlayers);
+  } else {
+    // P2P aún negociando: marcar pendiente, _checkAllConnected lo ejecutará
+    NET._pendingStart = true;
+    btn.textContent = 'ESPERANDO P2P...';
+  }
 });
 
 document.getElementById('btn-restart').addEventListener('click', ()=>location.reload());
